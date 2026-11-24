@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course Project Report - Smart Hospital Bed Allocation & Patient Flow Management System</title>
+  <style>
+    /* Academic Report Styling */
+    @import url('https://fonts.googleapis.com/css2?family=Times+New+Roman&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    :root {
+      --primary: #163A5F;
+      --accent: #13A89E;
+      --text: #1E293B;
+      --text-muted: #475569;
+      --border: #CBD5E1;
+      --bg-light: #F8FAFC;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Times New Roman', Times, serif, 'Inter', sans-serif;
+      color: var(--text);
+      line-height: 1.65;
+      background: #E2E8F0;
+      font-size: 11.5pt;
+    }
+
+    /* Floating Print & Download Action Bar */
+    .action-bar {
+      position: fixed;
+      top: 15px;
+      right: 20px;
+      z-index: 1000;
+      display: flex;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      padding: 10px 16px;
+      border-radius: 50px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      border: 1px solid var(--border);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--primary);
+      color: #FFFFFF;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 30px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      background: #0F2742;
+      transform: translateY(-1px);
+    }
+
+    .btn.btn-teal {
+      background: var(--accent);
+    }
+
+    .btn.btn-teal:hover {
+      background: #0E857D;
+    }
+
+    /* Page Setup */
+    .report-container {
+      max-width: 900px;
+      margin: 30px auto;
+      background: #FFFFFF;
+      padding: 60px 75px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+      border-radius: 4px;
+    }
+
+    /* Cover Page */
+    .cover-page {
+      text-align: center;
+      min-height: 900px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 40px 10px;
+      page-break-after: always;
+      break-after: page;
+      border-bottom: 2px solid #E2E8F0;
+      margin-bottom: 50px;
+    }
+
+    .cover-title {
+      font-size: 24pt;
+      font-weight: bold;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      line-height: 1.35;
+      margin: 20px 0;
+    }
+
+    .cover-subtitle {
+      font-size: 13pt;
+      font-weight: normal;
+      font-style: italic;
+      color: var(--text-muted);
+      margin: 10px 0;
+    }
+
+    .cover-course {
+      font-size: 14pt;
+      font-weight: bold;
+      color: #0F2742;
+      text-transform: uppercase;
+      margin: 6px 0;
+    }
+
+    .cover-subtext {
+      font-size: 12pt;
+      margin: 4px 0;
+    }
+
+    .cover-section-box {
+      margin: 25px 0;
+    }
+
+    .cover-meta {
+      font-size: 12pt;
+      line-height: 1.5;
+    }
+
+    .cover-meta strong {
+      color: var(--primary);
+      font-size: 13pt;
+    }
+
+    .cover-footer {
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+      font-size: 12pt;
+    }
+
+    .cover-footer h4 {
+      font-size: 14pt;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+
+    /* Section Headers */
+    h1.section-title {
+      font-size: 18pt;
+      color: var(--primary);
+      text-transform: uppercase;
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 6px;
+      margin: 40px 0 18px 0;
+      page-break-after: avoid;
+    }
+
+    h2 {
+      font-size: 14pt;
+      color: #0F2742;
+      margin: 24px 0 10px 0;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 4px;
+      page-break-after: avoid;
+    }
+
+    h3 {
+      font-size: 12pt;
+      color: var(--primary);
+      margin: 18px 0 8px 0;
+      page-break-after: avoid;
+    }
+
+    p {
+      margin-bottom: 14px;
+      text-align: justify;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 18px 0 24px 0;
+      font-size: 10.5pt;
+      page-break-inside: avoid;
+    }
+
+    th, td {
+      border: 1px solid #CBD5E1;
+      padding: 10px 14px;
+      text-align: left;
+    }
+
+    th {
+      background: #F1F5F9;
+      color: var(--primary);
+      font-weight: bold;
+      text-transform: uppercase;
+      font-size: 9pt;
+      letter-spacing: 0.5px;
+    }
+
+    tr:nth-child(even) td {
+      background: #F8FAFC;
+    }
+
+    /* UML & Architectural Diagrams */
+    .diagram-box {
+      background: #F8FAFC;
+      border: 1px solid #CBD5E1;
+      border-left: 4px solid var(--primary);
+      padding: 16px;
+      border-radius: 4px;
+      margin: 20px 0;
+      font-family: 'JetBrains Mono', Consolas, monospace;
+      font-size: 8.5pt;
+      line-height: 1.35;
+      overflow-x: auto;
+      white-space: pre;
+      page-break-inside: avoid;
+    }
+
+    .figure-caption {
+      text-align: center;
+      font-style: italic;
+      font-size: 10.5pt;
+      color: var(--text-muted);
+      margin: 8px 0 24px 0;
+      font-weight: 600;
+    }
+
+    /* Code blocks */
+    code, pre {
+      font-family: 'JetBrains Mono', Consolas, monospace;
+      font-size: 9pt;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 9pt;
+      font-family: 'Inter', sans-serif;
+      font-weight: bold;
+    }
+
+    .badge-green { background: #ECFDF5; color: #065F46; border: 1px solid #A7F3D0; }
+    .badge-red { background: #FEF2F2; color: #991B1B; border: 1px solid #FECACA; }
+    .badge-yellow { background: #FFFBEB; color: #92400E; border: 1px solid #FDE68A; }
+    .badge-blue { background: #EFF6FF; color: #1E40AF; border: 1px solid #BFDBFE; }
+
+    /* Page Breaks for Printing */
+    .page-break {
+      page-break-after: always;
+      break-after: page;
+    }
+
+    @media print {
+      body {
+        background: #FFFFFF;
+        font-size: 11pt;
+      }
+      .no-print, .action-bar {
+        display: none !important;
+      }
+      .report-container {
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+        box-shadow: none;
+      }
+      a {
+        color: var(--text);
+        text-decoration: none;
+      }
+      @page {
+        size: A4;
+        margin: 20mm;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Non-Printing Top Action Bar -->
+  <div class="action-bar no-print">
+    <button class="btn" onclick="window.print()">
+      <span>🖨️ Print / Save as PDF</span>
+    </button>
+    <a href="index.html" class="btn btn-teal">
+      <span>🏥 Open Live Application</span>
+    </a>
+  </div>
+
+  <div class="report-container">
+
+    <!-- ========================================================================== -->
+    <!-- COVER PAGE                                                                 -->
+    <!-- ========================================================================== -->
+    <div class="cover-page">
+      <div>
+        <div class="cover-subtitle">A Course Project Report On</div>
+        <div class="cover-title">
+          Design and Development of a Smart Hospital Bed Allocation and Patient Flow Management System (MediPulse Flow)
+        </div>
+        <div class="cover-subtitle">
+          Submitted in partial fulfillment of the completion of the course
+        </div>
+        <div class="cover-course">
+          SOFTWARE ENGINEERING AND SYSTEM DESIGN<br>(24CS301PC311)
+        </div>
+        <div class="cover-subtext">
+          In <strong>III Year, I Semester B. Tech - Computer Science & Engineering</strong>
+        </div>
+      </div>
+
+      <div class="cover-section-box">
+        <div class="cover-meta" style="margin-bottom: 20px;">
+          <p style="margin-bottom: 4px; text-align: center;">Submitted by:</p>
+          <strong>PRANAV</strong><br>
+          Roll Number: <strong>2403A51385</strong><br>
+          Email: <strong>2403a51385@sru.edu.in</strong><br>
+          GitHub: <a href="https://github.com/Pranav9491/SESD-Project" target="_blank">github.com/Pranav9491/SESD-Project</a>
+        </div>
+
+        <div class="cover-meta">
+          <p style="margin-bottom: 4px; text-align: center;">Under the esteemed supervision of:</p>
+          <strong>Dr. V. Shobha Rani</strong><br>
+          Assistant Professor,<br>
+          School of Computer Science & Artificial Intelligence
+        </div>
+      </div>
+
+      <div class="cover-footer">
+        <h4>Department of Computer Science & Artificial Intelligence</h4>
+        <strong>SR UNIVERSITY</strong><br>
+        Warangal, Telangana, India<br>
+        <strong>Academic Year: 2026 – 2027</strong>
+      </div>
+    </div>
+
+    <!-- ========================================================================== -->
+    <!-- TABLE OF CONTENTS (INDEX)                                                  -->
+    <!-- ========================================================================== -->
+    <h1 class="section-title">Table of Contents</h1>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 15%;">Section</th>
+          <th style="width: 70%;">Title</th>
+          <th style="width: 15%; text-align: right;">Page</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>1.</strong></td><td><strong>Abstract</strong></td><td style="text-align: right;">3</td></tr>
+        <tr><td><strong>2.</strong></td><td><strong>Introduction</strong></td><td style="text-align: right;">4</td></tr>
+        <tr><td></td><td>2.1 Problem Statement</td><td style="text-align: right;">4</td></tr>
+        <tr><td></td><td>2.2 Objectives</td><td style="text-align: right;">5</td></tr>
+        <tr><td></td><td>2.3 Scope</td><td style="text-align: right;">5</td></tr>
+        <tr><td><strong>3.</strong></td><td><strong>Software Requirements Specification (SRS)</strong></td><td style="text-align: right;">6</td></tr>
+        <tr><td></td><td>3.1 Functional Requirements (FR-01 to FR-10)</td><td style="text-align: right;">6</td></tr>
+        <tr><td></td><td>3.2 Non-Functional Requirements (NFR-01 to NFR-05)</td><td style="text-align: right;">7</td></tr>
+        <tr><td></td><td>3.3 Hardware and Software Requirements</td><td style="text-align: right;">8</td></tr>
+        <tr><td><strong>4.</strong></td><td><strong>System Analysis</strong></td><td style="text-align: right;">9</td></tr>
+        <tr><td></td><td>4.1 Existing System</td><td style="text-align: right;">9</td></tr>
+        <tr><td></td><td>4.2 Proposed System</td><td style="text-align: right;">10</td></tr>
+        <tr><td><strong>5.</strong></td><td><strong>System Design (UML Modeling)</strong></td><td style="text-align: right;">11</td></tr>
+        <tr><td></td><td>5.1 System Architecture (Figure 5.1)</td><td style="text-align: right;">11</td></tr>
+        <tr><td></td><td>5.2 Use Case Diagram (Figure 5.2)</td><td style="text-align: right;">13</td></tr>
+        <tr><td></td><td>5.3 Class Diagram (Figure 5.3)</td><td style="text-align: right;">15</td></tr>
+        <tr><td></td><td>5.4 Sequence Diagram (Figure 5.4)</td><td style="text-align: right;">17</td></tr>
+        <tr><td></td><td>5.5 Activity Diagram (Figure 5.5)</td><td style="text-align: right;">19</td></tr>
+        <tr><td><strong>6.</strong></td><td><strong>Methodology & SDLC Flowchart (Figure 6.1)</strong></td><td style="text-align: right;">21</td></tr>
+        <tr><td><strong>7.</strong></td><td><strong>Implementation & Code Architecture</strong></td><td style="text-align: right;">23</td></tr>
+        <tr><td></td><td>7.1 Frontend Architecture & Healthcare Design System</td><td style="text-align: right;">23</td></tr>
+        <tr><td></td><td>7.2 Backend REST API & Express Architecture</td><td style="text-align: right;">24</td></tr>
+        <tr><td></td><td>7.3 Rule-Based Smart Bed Allocation Engine</td><td style="text-align: right;">25</td></tr>
+        <tr><td></td><td>7.4 In-Memory & JSON Persistent Data Architecture</td><td style="text-align: right;">26</td></tr>
+        <tr><td></td><td>7.5 Patient Flow & 4-Stage Kanban Workflow Engine</td><td style="text-align: right;">27</td></tr>
+        <tr><td></td><td>7.6 Automated Discharge & Dynamic Bed Recalculation</td><td style="text-align: right;">28</td></tr>
+        <tr><td></td><td>7.7 Chart.js Data Visualizations & Lucide Integration</td><td style="text-align: right;">29</td></tr>
+        <tr><td></td><td>7.8 Testing, Verification & End-to-End Test Suite</td><td style="text-align: right;">30</td></tr>
+        <tr><td><strong>8.</strong></td><td><strong>Output Screenshots & Module Walkthrough (Figures 8.1 - 8.10)</strong></td><td style="text-align: right;">31</td></tr>
+        <tr><td><strong>9.</strong></td><td><strong>Conclusion & Future Enhancements</strong></td><td style="text-align: right;">41</td></tr>
+        <tr><td><strong>10.</strong></td><td><strong>References</strong></td><td style="text-align: right;">42</td></tr>
+      </tbody>
+    </table>
+
+    <div class="page-break"></div>
+
+    <!-- ========================================================================== -->
+    <!-- 1. ABSTRACT                                                                -->
+    <!-- ========================================================================== -->
+    <h1 class="section-title">1. Abstract</h1>
+    <p>
+      The course project titled <strong>“Design and Development of a Smart Hospital Bed Allocation and Patient Flow Management System (MediPulse Flow)”</strong> presents the comprehensive engineering, architectural modeling, and deployment of a responsive, full-stack hospital operational intelligence web application. In contemporary healthcare facilities, manual bed management and disconnected departmental coordination lead to severe emergency department boarding, prolonged patient wait times, sub-optimal bed turnover rates, and clinical triage risks. <strong>MediPulse Flow</strong> eliminates these administrative bottlenecks by providing an automated, priority-driven smart bed allocation engine coupled with an interactive four-stage Kanban patient workflow board.
+    </p>
+    <p>
+      The system is developed with a strict, lightweight technology stack ensuring high performance and local self-sufficiency. The frontend client is built using semantic <strong>HTML5</strong>, modern <strong>CSS3</strong> (featuring a clinical healthcare palette: Primary Navy Blue <code>#163A5F</code>, Accent Teal <code>#13A89E</code>, and Light Grey <code>#F4F7FA</code>), and modern <strong>TypeScript / Vanilla JavaScript (ES6+)</strong>, communicating asynchronously with backend endpoints via the native Fetch API. Real-time hospital analytics and distribution metrics are visualized using <strong>Chart.js</strong> and styled with <strong>Lucide Icons</strong>. The backend is engineered on <strong>Node.js</strong> and <strong>Express.js</strong> in strict <strong>TypeScript</strong>, exposing RESTful endpoints for patient directory management, visual ward beds, inter-ward transfers, and clinical workflow transitions. Data persistence is managed through an in-memory synchronized JSON storage engine (<code>mockData.json</code>) pre-configured with a realistic dataset of <strong>250 hospital beds</strong> across five clinical wards (General Ward, ICU, Emergency, Private Ward, Pediatric Ward) and <strong>193 patient records</strong> (including 15 patients in an active triage queue).
+    </p>
+    <p>
+      Key innovations include a deterministic triage allocation algorithm prioritizing Emergency patients, atomic bed transfers that prevent allocation conflicts, a four-stage Kanban workflow (<em>Waiting $\rightarrow$ Admitted $\rightarrow$ Under Treatment $\rightarrow$ Ready for Discharge</em>), and automated discharge protocols that immediately release beds, timestamp sanitization, and dynamically recalculate census metrics. The application passed an automated end-to-end integration test suite with a 100% success rate and is maintained under Git version control on GitHub.
+    </p>
+
+    <!-- ========================================================================== -->
+    <!-- 2. INTRODUCTION                                                            -->
+    <!-- ========================================================================== -->
+    <h1 class="section-title">2. Introduction</h1>
+    <p>
+      Inpatient bed availability is one of the most critical determinants of healthcare operational efficacy and patient clinical outcomes. When emergency departments experience overcrowding, delays in bed allocation lead to prolonged boarding, patient dissatisfaction, heightened clinical risks, and administrative burnout. Conventional hospital information systems often rely on static tabular databases, manual phone coordination, or physical whiteboards, resulting in significant communication latency between emergency triage, ward nursing stations, and housekeeping staff.
+    </p>
+    <p>
+      <strong>MediPulse Flow</strong> is conceived as a modern, real-time command center designed to optimize hospital operational velocity. By combining automated triage rules, visual color-coded ward management, and Kanban-style workflow progression, the platform ensures that critical patients receive expedited placement into appropriate wards while administrators maintain real-time visibility over hospital census and turnover rates.
+    </p>
+
+    <h2>2.1 Problem Statement</h2>
+    <p>Healthcare facilities face severe operational friction due to systemic inefficiencies in patient flow and bed management:</p>
+    <ol style="margin-left: 24px; margin-bottom: 16px;">
+      <li><strong>Emergency Boarding & Triage Delays:</strong> Patients requiring urgent inpatient care wait for extended periods in emergency corridors due to lack of real-time visibility into bed vacancies across specialized departments.</li>
+      <li><strong>Absence of Acuity-Based Allocation:</strong> Manual allocation workflows often process admissions on a first-come, first-served basis, resulting in non-critical patients occupying high-acuity beds needed for emergency cases.</li>
+      <li><strong>Inter-Ward Transfer Friction:</strong> Transferring recovering patients from intensive care to general wards involves manual coordination that frequently causes unrecorded vacancies or double-booking.</li>
+      <li><strong>Turnover Lag (Ghost Beds):</strong> When patients are discharged, hours often elapse before housekeeping is notified, causing beds to sit idle while triage queues lengthen.</li>
+      <li><strong>Lack of Dynamic Real-Time Analytics:</strong> Hospital leaders lack instantaneous dashboards showing dynamic occupancy percentages, daily admission/discharge velocity, and bed turnover rates calculated from live census data.</li>
+    </ol>
+
+    <h2>2.2 Objectives</h2>
+    <p>The primary engineering objectives of the project are:</p>
+    <ul style="margin-left: 24px; margin-bottom: 16px;">
+      <li><strong>Rule-Based Smart Allocation:</strong> Implement an automated triage algorithm that prioritizes Emergency and High-priority patients, matches target clinical departments, verifies bed availability, and updates patient status to Admitted.</li>
+      <li><strong>Four Specialized Operational Interfaces:</strong> Build responsive, modern interfaces for Dashboard Analytics, Patient Directory CRUD, Visual Bed Management, and Patient Flow Kanban.</li>
+      <li><strong>Synchronized RESTful Architecture:</strong> Construct a modular Express.js backend using TypeScript with standardized JSON response contracts and robust error handling.</li>
+      <li><strong>Dynamic Census Recalculation:</strong> Ensure that all hospital metrics (Total Beds, Available Beds, Occupied Beds, Waiting Patients, Occupancy Rate) recalculate dynamically upon any clinical mutation.</li>
+      <li><strong>Zero External Database Overhead:</strong> Persist all clinical data to a synchronized JSON storage engine (<code>mockData.json</code>), ensuring standalone local execution with zero database configuration.</li>
+    </ul>
+
+    <h2>2.3 Scope</h2>
+    <p>
+      The project scope encompasses the complete design, implementation, automated verification, local deployment, and GitHub version control of MediPulse Flow. The system tracks 250 hospital beds across five departments (General Ward, ICU, Emergency, Private Ward, Pediatric Ward) and four operational states (<strong>Available, Occupied, Maintenance, Reserved</strong>). Out of scope for this release are external billing payment gateways, biometric smart locks, and multi-hospital regional network clustering.
+    </p>
+
+    <div class="page-break"></div>
+
+    <!-- ========================================================================== -->
+    <!-- 3. SOFTWARE REQUIREMENTS SPECIFICATION (SRS)                               -->
+    <!-- ========================================================================== -->
+    <h1 class="section-title">3. Software Requirements Specification (SRS)</h1>
+
+    <h2>3.1 Functional Requirements</h2>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 15%;">Req ID</th>
+          <th style="width: 25%;">Capability</th>
+          <th style="width: 60%;">Detailed Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>FR-01</strong></td>
+          <td>Patient Registration</td>
+          <td>The system shall register incoming patients with an auto-generated unique ID (<code>PAT-xxxx</code>), capturing Name, Age, Gender, Contact, Address, Medical Condition, Department, Admission Date, and Priority Level (Emergency, High, Medium, Low).</td>
+        </tr>
+        <tr>
+          <td><strong>FR-02</strong></td>
+          <td>Patient Directory</td>
+          <td>The platform shall provide debounced search (by name, ID, condition, bed) and multi-criteria filtering across departments, admission statuses, and clinical priority levels.</td>
+        </tr>
+        <tr>
+          <td><strong>FR-03</strong></td>
+          <td>Record Modification & Deletion</td>
+          <td>The system shall permit editing patient records and deleting entries with mandatory confirmation dialogs. If an admitted patient is deleted, their assigned bed shall be automatically released and sanitized.</td>
+        </tr>
+        <tr>
+          <td><strong>FR-04</strong></td>
+          <td>Visual Ward Layout</td>
+          <td>The system shall render all 250 beds grouped by department, displaying bed numbers, department badges, status indicators, room numbers, and occupying patient details.</td>
+        </tr>
+        <tr>
+          <td><strong>FR-05</strong></td>
+          <td>Smart Bed Allocation</td>
+          <td>The system shall execute an automated triage algorithm that prioritizes Emergency patients, matches the patient's requested ward, verifies bed availability, marks the bed as Occupied, and updates patient status to Admitted.</td>
+        </tr>
+        <tr>
+          <td><strong>FR-06</strong></td>
+          <td>Atomic Bed Transfer</td>
+          <td>The system shall transfer an admitted patient between wards, atomically releasing the previous bed back to Available, occupying the destination bed, updating patient records, and logging the event in the audit stream.</td>
+        </tr>
+        <tr>
+          <td><strong>FR-07</strong></td>
+          <td>Bed Maintenance Protocol</td>
+          <td>Staff shall be able to toggle available beds into Maintenance mode for UV sanitization and restore them to Available upon completion. Occupied beds are protected from maintenance toggling.</td>
+        </tr>
+        <tr>
+          <td><strong>FR-08</strong></td>
+          <td>4-Stage Kanban Flow</td>
+          <td>The platform shall track patients across four visual workflow columns: <em>Waiting for Admission</em>, <em>Admitted</em>, <em>Under Treatment</em>, and <em>Ready for Discharge</em>, with one-click stage advancement.</td>
+        </tr>
+        <tr>
+          <td><strong>FR-09</strong></td>
+          <td>Automated Discharge</td>
+          <td>Confirming a discharge shall update patient status to Discharged, timestamp the discharge date, immediately release the occupied bed, increment available beds, and record the discharge in the activity log.</td>
+        </tr>
+        <tr>
+          <td><strong>FR-10</strong></td>
+          <td>Dynamic Hospital Analytics</td>
+          <td>The system shall dynamically calculate total beds, available beds, occupied beds, waiting patients, daily admissions, daily discharges, occupancy percentage, and turnover rate, updating Chart.js visualizations in real time.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>3.2 Non-Functional Requirements</h2>
+    <ul style="margin-left: 24px; margin-bottom: 16px;">
+      <li><strong>NFR-01: Performance & Latency:</strong> All REST API endpoints shall respond within 50ms under local in-memory execution. Static HTML5/CSS3 assets shall load within 200ms.</li>
+      <li><strong>NFR-02: ACID-like Consistency:</strong> Bed allocations and transfers shall maintain atomicity in memory: a bed cannot be double-allocated, and a patient cannot occupy multiple beds simultaneously.</li>
+      <li><strong>NFR-03: Responsive Design & Usability:</strong> The user interface shall adapt fluidly across viewports from 320px (mobile handsets) to 2560px (desktop clinical workstations) using CSS Grid and Flexbox.</li>
+      <li><strong>NFR-04: Standalone Execution:</strong> The application shall run entirely locally without requiring external database servers (PostgreSQL/MySQL), persisting state to a synchronized JSON store (<code>mockData.json</code>).</li>
+      <li><strong>NFR-05: Modularity & Code Quality:</strong> The codebase shall maintain strict separation of concerns into Controllers, Routes, Services, Types, and Frontend modules, achieving 100% strict TypeScript compilation compliance.</li>
+    </ul>
+
+    <h2>3.3 Hardware and Software Requirements</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Component</th>
+          <th>Specification</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td rowspan="4"><strong>Hardware</strong></td>
+          <td>Processor</td>
+          <td>Intel Core i3 / AMD Ryzen 3 or higher (2.0 GHz+)</td>
+        </tr>
+        <tr>
+          <td>RAM</td>
+          <td>Minimum 4 GB (8 GB recommended for concurrent runtime)</td>
+        </tr>
+        <tr>
+          <td>Storage</td>
+          <td>Minimum 500 MB free disk space for node_modules and data</td>
+        </tr>
+        <tr>
+          <td>Display</td>
+          <td>1080p (1920x1080) clinical monitor or mobile responsive display</td>
+        </tr>
+        <tr>
+          <td rowspan="6"><strong>Software</strong></td>
+          <td>Operating System</td>
+          <td>Microsoft Windows 10/11, Ubuntu Linux 20.04+, or macOS</td>
+        </tr>
+        <tr>
+          <td>Runtime Environment</td>
+          <td>Node.js LTS (tested on v24.11.1)</td>
+        </tr>
+        <tr>
+          <td>Package Manager</td>
+          <td>npm (tested on v11.6.2)</td>
+        </tr>
+        <tr>
+          <td>Backend Framework</td>
+          <td>Express.js v4.21.2 with TypeScript v5.7.2</td>
+        </tr>
+        <tr>
+          <td>Visualization Libraries</td>
+          <td>Chart.js v4.x and Lucide Icons</td>
+        </tr>
+        <tr>
+          <td>Version Control</td>
+          <td>Git v2.40+ and GitHub repository hosting</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="page-break"></div>
+
+    <!-- ========================================================================== -->
+    <!-- 4. SYSTEM ANALYSIS                                                         -->
+    <!-- ========================================================================== -->
+    <h1 class="section-title">4. System Analysis</h1>
+
+    <h2>4.1 Existing System</h2>
+    <p>
+      In prevailing healthcare administration across many regional and community hospitals, bed management is handled through manual phone calls, dry-erase whiteboards at nursing stations, or unlinked spreadsheet logs (such as Microsoft Excel). When an emergency patient requires admission, the triage nurse contacts the central admission coordinator, who sequentially telephones ward supervisors across the hospital to check for vacancies.
+    </p>
+    <p><strong>Critical Bottlenecks of the Existing System:</strong></p>
+    <ul style="margin-left: 24px; margin-bottom: 16px;">
+      <li><strong>Severe Communication Latency:</strong> Manual bed queries cause delays of 45 to 90 minutes before a vacant bed is identified and prepped.</li>
+      <li><strong>Absence of Acuity Triage:</strong> Admissions are processed chronologically rather than by medical urgency, causing high-priority emergency cases to wait behind non-urgent elective admissions.</li>
+      <li><strong>Double-Booking & Allocation Conflicts:</strong> Unsynchronized spreadsheets and shift changes frequently cause multiple nurses to assign different patients to the same bed.</li>
+      <li><strong>Turnover Lag (Ghost Beds):</strong> Beds vacated by discharged patients often remain marked as occupied for hours until manual paperwork is processed, leaving clean beds unavailable to triage.</li>
+      <li><strong>Lack of Real-Time Management Oversight:</strong> Hospital executives have no live visibility into occupancy percentages, ward bottlenecks, or bed turnover metrics.</li>
+    </ul>
+
+    <h2>4.2 Proposed System</h2>
+    <p>
+      <strong>MediPulse Flow</strong> replaces fragmented manual tracking with a centralized, real-time digital command center. By combining an automated allocation engine, interactive visual ward maps, and a Kanban patient flow pipeline, the system transforms bed management into a deterministic and transparent process.
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 25%;">Feature</th>
+          <th style="width: 35%;">Existing Manual System</th>
+          <th style="width: 40%;">Proposed MediPulse Flow System</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Bed Visibility</strong></td>
+          <td>Fragmented whiteboards, phone calls, static spreadsheets</td>
+          <td>Real-time visual grid color-coded across all 250 beds</td>
+        </tr>
+        <tr>
+          <td><strong>Allocation Method</strong></td>
+          <td>Manual, arbitrary, first-come first-served</td>
+          <td>Automated rule-based prioritization (Emergency > High > Med > Low)</td>
+        </tr>
+        <tr>
+          <td><strong>Allocation Latency</strong></td>
+          <td>45 to 90 minutes per admission</td>
+          <td>Sub-second automated matching and assignment</td>
+        </tr>
+        <tr>
+          <td><strong>Patient Transfers</strong></td>
+          <td>High risk of double-booking and communication errors</td>
+          <td>Atomic inter-ward transfers with automatic bed state synchronization</td>
+        </tr>
+        <tr>
+          <td><strong>Discharge Turnover</strong></td>
+          <td>Hours of turnover lag; beds sit idle</td>
+          <td>Automated bed release upon discharge; instant sanitization records</td>
+        </tr>
+        <tr>
+          <td><strong>Analytics & Reporting</strong></td>
+          <td>Manual periodic reports compiled after the fact</td>
+          <td>Live Chart.js charts dynamically updating census metrics in real time</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="page-break"></div>
+
+    <!-- ========================================================================== -->
+    <!-- 5. SYSTEM DESIGN                                                           -->
+    <!-- ========================================================================== -->
+    <h1 class="section-title">5. System Design</h1>
+
+    <h2>5.1 System Architecture</h2>
+    <div class="diagram-box">
++-----------------------------------------------------------------------------+
+|                      PRESENTATION LAYER (Client Browser)                    |
+|                                                                             |
+|  +--------------------+  +-------------------+  +------------------------+  |
+|  | index.html         |  | patients.html     |  | beds.html              |  |
+|  | (Dashboard & Stats)|  | (CRUD & Search)   |  | (Visual Allocation)    |  |
+|  +--------------------+  +-------------------+  +------------------------+  |
+|  +--------------------+  +-------------------+  +------------------------+  |
+|  | patient-flow.html  |  | Chart.js v4       |  | Lucide Icons           |  |
+|  | (4-Stage Kanban)   |  | (Visual Graphs)   |  | (UI Iconography)       |  |
+|  +--------------------+  +-------------------+  +------------------------+  |
+|                                     |                                       |
+|                                     | Asynchronous REST / JSON (Fetch API)  |
+|                                     v                                       |
++-----------------------------------------------------------------------------+
+|                      APPLICATION LAYER (Node.js + Express)                  |
+|                                                                             |
+|  +-----------------------------------------------------------------------+  |
+|  | Middleware: CORS, express.json(), Static Asset Serving, Error Handling|  |
+|  +-----------------------------------------------------------------------+  |
+|                                     |                                       |
+|  +-------------------+  +--------------------+  +------------------------+  |
+|  | patientRoutes     |  | bedRoutes          |  | flowRoutes             |  |
+|  | dashboardRoutes   |  | (REST Routing)     |  | (Stage Control)        |  |
+|  +-------------------+  +--------------------+  +------------------------+  |
+|                                     |                                       |
+|  +-------------------+  +--------------------+  +------------------------+  |
+|  | patientController |  | bedController      |  | flowController         |  |
+|  | dashboardControl. |  | (Request/Response) |  | (Business Logic)       |  |
+|  +-------------------+  +--------------------+  +------------------------+  |
+|                                     |                                       |
+|  +-----------------------------------------------------------------------+  |
+|  | AllocationService: Smart Allocation Engine, Transfer, Discharge Rules|  |
+|  +-----------------------------------------------------------------------+  |
+|                                     |                                       |
++-----------------------------------------------------------------------------+
+|                      DATA PERSISTENCE LAYER                                 |
+|                                                                             |
+|  +-----------------------------------------------------------------------+  |
+|  | In-Memory Cache <---> mockData.json Persistent Storage                |  |
+|  | (250 Beds, 193 Inpatients, 50 Audit Logs, 5 Hospital Departments)    |  |
+|  +-----------------------------------------------------------------------+  |
++-----------------------------------------------------------------------------+
+    </div>
+    <div class="figure-caption">Figure 5.1: MediPulse Flow Multi-Tier System Architecture</div>
+
+    <h2>5.2 Use Case Diagram</h2>
+    <div class="diagram-box">
+                       +---------------------------------------+
+                       |    MediPulse Flow Hospital System     |
+                       |                                       |
+                       |         +-----------------------+     |
+                       |    +--->| View Dashboard Census |     |
+                       |    |    +-----------------------+     |
+                       |    |                                  |
+                       |    |    +-----------------------+     |
+                       |    +--->| Register New Patient  |     |
+                       |    |    +-----------------------+     |
+                       |    |                                  |
+                       |    |    +-----------------------+     |
+                       |    +--->| Search & Filter Inpts |     |
++------------------+   |    |    +-----------------------+     |
+|                  |---+    |                                  |
+|   Hospital Staff |   |    |    +-----------------------+     |
+|   (Nurse / Clerk)|   |    +--->| Allocate Bed (Smart)  |     |
+|                  |---+    |    +-----------------------+     |
++------------------+   |    |                                  |
+                       |    |    +-----------------------+     |
+                       |    +--->| Transfer Patient Bed  |     |
+                       |    |    +-----------------------+     |
+                       |    |                                  |
+                       |    |    +-----------------------+     |
+                       |    +--->| Advance Kanban Stage  |     |
+                       |    |    +-----------------------+     |
+                       |    |                                  |
+                       |    |    +-----------------------+     |
+                       |    +--->| Discharge Patient     |     |
+                       |         +-----------------------+     |
+                       |                     ^                 |
+                       |                     |                 |
++------------------+   |         +-----------------------+     |
+|                  |---+-------->| Toggle Bed Maint.     |     |
+|   Administrator  |   |         +-----------------------+     |
+|   / Operations   |---+                                       |
+|                  |   |         +-----------------------+     |
++------------------+   +-------->| Inspect Audit Trails  |     |
+                       |         +-----------------------+     |
+                       +---------------------------------------+
+    </div>
+    <div class="figure-caption">Figure 5.2: Multi-Actor Use Case Diagram</div>
+
+    <div class="page-break"></div>
+
+    <h2>5.3 Class Diagram</h2>
+    <div class="diagram-box">
++--------------------------------------+           +--------------------------------------+
+|               Patient                |           |                 Bed                  |
++--------------------------------------+           +--------------------------------------+
+| + id: string                         |           | + id: string                         |
+| + name: string                       |           | + bedNumber: string                  |
+| + age: number                        |           | + department: Department             |
+| + gender: string                     | occupies  | + status: BedStatus                  |
+| + phone: string                      | 0..1  0..1| + patientId: string | null           |
+| + address: string                    |<--------->| + patientName: string | null         |
+| + medicalCondition: string           |           | + lastCleaned: string                |
+| + department: Department             |           | + occupiedSince: string | null       |
+| + admissionDate: string              |           | + floor: string                      |
+| + priority: PatientPriority          |           | + room: string                       |
+| + status: PatientStatus              |           +--------------------------------------+
+| + bedNumber: string | null           |
+| + assignedDoctor: string             |
+| + dischargeDate: string | null       |
++--------------------------------------+
+                  ^
+                  | logs events for
+                  v
++--------------------------------------+           +--------------------------------------+
+|               Activity               |           |            DashboardStats            |
++--------------------------------------+           +--------------------------------------+
+| + id: string                         |           | + totalBeds: number                  |
+| + timestamp: string                  |           | + availableBeds: number              |
+| + type: ActivityType                 | evaluates | + occupiedBeds: number               |
+| + title: string                      |---------->| + maintenanceBeds: number            |
+| + description: string                |           | + reservedBeds: number               |
+| + patientId: string                  |           | + patientsWaiting: number            |
+| + bedNumber: string                  |           | + occupancyPercentage: number        |
+| + department: string                 |           | + dailyAdmissions: number            |
+| + badgeType: string                  |           | + dailyDischarges: number            |
++--------------------------------------+           | + bedTurnoverRate: string            |
+                                                   +--------------------------------------+
+    </div>
+    <div class="figure-caption">Figure 5.3: Core Entity Relationship and Data Models</div>
+
+    <h2>5.4 Sequence Diagram</h2>
+    <div class="diagram-box">
+Staff User               Frontend Browser              Express Backend              AllocationService        mockData.json
+    |                           |                             |                             |                     |
+    | 1. Click "Smart Alloc"    |                             |                             |                     |
+    |-------------------------->|                             |                             |                     |
+    |                           | 2. POST /api/beds/smart-alloc|                            |                     |
+    |                           |---------------------------->|                             |                     |
+    |                           |                             | 3. smartAutoAllocate()      |                     |
+    |                           |                             |---------------------------->|                     |
+    |                           |                             |                             | 4. Fetch Queue & Beds|
+    |                           |                             |                             |-------------------->|
+    |                           |                             |                             | 5. Return JSON data |
+    |                           |                             |                             |<--------------------|
+    |                           |                             |                             |                     |
+    |                           |                             |                             | 6. Evaluate Priority|
+    |                           |                             |                             |    (Emergency 1st)  |
+    |                           |                             |                             | 7. Match Ward Bed   |
+    |                           |                             |                             | 8. Mutate Status    |
+    |                           |                             |                             |                     |
+    |                           |                             |                             | 9. Persist Update   |
+    |                           |                             |                             |-------------------->|
+    |                           |                             | 10. Return Allocation Result|                     |
+    |                           |                             |<----------------------------|                     |
+    |                           | 11. HTTP 200 { success }    |                             |                     |
+    |                           |<----------------------------|                             |                     |
+    |                           |                             |                             |                     |
+    | 12. Display Success Toast |                             |                             |                     |
+    |     & Refresh Census Grid |                             |                             |                     |
+    |<--------------------------|                             |                             |                     |
+    </div>
+    <div class="figure-caption">Figure 5.4: Rule-Based Smart Bed Allocation Sequence</div>
+
+    <div class="page-break"></div>
+
+    <h2>5.5 Activity Diagram</h2>
+    <div class="diagram-box">
+                                  [Start: Incoming Patient]
+                                              |
+                                              v
+                                  +-----------------------+
+                                  | Enter Patient Details |
+                                  | & Assess Triage Acuity|
+                                  +-----------------------+
+                                              |
+                                              v
+                                  < Is Urgent Emergency? >
+                                     /                 \
+                             Yes    /                   \  No
+                                   v                     v
+                     +------------------------+   +------------------------+
+                     | Immediate Smart Alloc: |   | Enqueue in Waiting List|
+                     | Auto-Match ICU/ER Bed  |   | (Standard Triage Queue)|
+                     +------------------------+   +------------------------+
+                                   |                         |
+                                   |                         v
+                                   |              < Available Bed in Ward? >
+                                   |                 /                  \
+                                   |         Yes    /                    \  No
+                                   |               v                      v
+                                   |   +-----------------------+  +------------------+
+                                   |   | Allocate Bed to Pat.  |  | Retain in Queue  |
+                                   |   | (Status: Admitted)    |  | & Emit Alert     |
+                                   |   +-----------------------+  +------------------+
+                                   |               |                       |
+                                   +-------+-------+                       |
+                                           |                               |
+                                           v                               v
+                              +--------------------------+                 |
+                              | Advance through Workflow |                 |
+                              | (Treatment -> Ready)     |                 |
+                              +--------------------------+                 |
+                                           |                               |
+                                           v                               |
+                              +--------------------------+                 |
+                              | Confirm Patient Discharge|                 |
+                              +--------------------------+                 |
+                                           |                               |
+                                           v                               |
+                              +--------------------------+                 |
+                              | Automatically Release    |                 |
+                              | Bed & Recalculate Stats  |                 |
+                              +--------------------------+                 |
+                                           |                               |
+                                           v                               v
+                                  [End: Census Updated]        [Wait for Vacancy]
+    </div>
+    <div class="figure-caption">Figure 5.5: Inpatient Flow and Bed Allocation Decision Lifecycle</div>
+
+    <!-- ========================================================================== -->
+    <!-- 6. METHODOLOGY                                                             -->
+    <!-- ========================================================================== -->
+    <h1 class="section-title">6. Methodology</h1>
+    <p>
+      The software engineering methodology employed for MediPulse Flow follows an agile, milestone-driven adaptation of the classic Software Development Life Cycle (SDLC):
+    </p>
+    <div class="diagram-box">
++--------------------+      +--------------------+      +--------------------+
+| 1. Requirements    |      | 2. UI/UX Design    |      | 3. Domain Modeling |
+|    Analysis        | ---> |    System          | ---> |    & Types         |
+| - Problem Scope    |      | - Healthcare Spec  |      | - TypeScript Types |
+| - SRS Specification|      | - Color Guidelines |      | - Mock Data Design |
++--------------------+      +--------------------+      +--------------------+
+                                                                   |
+                                                                   v
++--------------------+      +--------------------+      +--------------------+
+| 6. Testing &       |      | 5. Frontend &      |      | 4. Backend REST    |
+|    Verification    | <--- |    Visualizations  | <--- |    API Dev         |
+| - 29 E2E Tests     |      | - 4 Modular Pages  |      | - Express Engine   |
+| - 0 Compile Errors |      | - Chart.js Charts  |      | - Allocation Logic |
++--------------------+      +--------------------+      +--------------------+
+          |
+          v
++--------------------+
+| 7. Deployment &    |
+|    Git Delivery    |
+| - Localhost:3000   |
+| - GitHub Repository|
++--------------------+
+    </div>
+    <div class="figure-caption">Figure 6.1: Structured Software Engineering Lifecycle of MediPulse Flow</div>
+
+    <p>The development lifecycle proceeded across seven structured phases:</p>
+    <ol style="margin-left: 24px; margin-bottom: 16px;">
+      <li><strong>Requirements Analysis:</strong> Formalized functional requirements, non-functional constraints, and operational hospital workflows into an SRS specification.</li>
+      <li><strong>UI/UX Design System:</strong> Established an ergonomic healthcare design palette (Navy Blue <code>#163A5F</code>, Accent Teal <code>#13A89E</code>, Light Background <code>#F4F7FA</code>) with CSS Grid and Flexbox layouts.</li>
+      <li><strong>Domain Modeling & TypeScript Typing:</strong> Defined TypeScript data models (<code>Bed</code>, <code>Patient</code>, <code>Activity</code>, <code>DashboardStats</code>) and generated an initial dataset of 250 beds and 193 patients.</li>
+      <li><strong>Backend REST API Development:</strong> Engineered Express.js routers, controllers, and decision services with atomic transfer and automated discharge capabilities.</li>
+      <li><strong>Frontend Construction:</strong> Built four interactive, responsive web pages with debounced search, modal dialogs, and Chart.js visualizations.</li>
+      <li><strong>Automated Testing & Verification:</strong> Executed an automated integration test suite verifying all 12 API endpoints, patient CRUD, smart allocation, and bed transfers with a 100% pass rate.</li>
+      <li><strong>Deployment & Version Control:</strong> Deployed locally on port 3000 and committed all source files to GitHub at <a href="https://github.com/Pranav9491/SESD-Project" target="_blank">https://github.com/Pranav9491/SESD-Project</a>.</li>
+    </ol>
+
+    <div class="page-break"></div>
+
+    <!-- ========================================================================== -->
+    <!-- 7. IMPLEMENTATION                                                          -->
+    <!-- ========================================================================== -->
+    <h1 class="section-title">7. Implementation</h1>
+
+    <h2>7.1 Frontend Architecture & Healthcare Design System</h2>
+    <p>
+      The client presentation layer is engineered using semantic <strong>HTML5</strong>, modern <strong>CSS3</strong>, and modular <strong>TypeScript / ES6+ JavaScript</strong> without bulky external frameworks. The visual design system (defined in <code>frontend/css/style.css</code>) enforces strict healthcare ergonomics:
+    </p>
+    <ul style="margin-left: 24px; margin-bottom: 14px;">
+      <li><strong>Primary Navy (<code>#163A5F</code>):</strong> Structural branding, headers, and primary actions.</li>
+      <li><strong>Accent Teal (<code>#13A89E</code>):</strong> Active navigation states, interactive toggles, and buttons.</li>
+      <li><strong>Light Background (<code>#F4F7FA</code>):</strong> Low eye-strain clinical working background.</li>
+      <li><strong>Bed Status Colors:</strong> <span class="badge badge-green">Available: #10B981</span>, <span class="badge badge-red">Occupied: #EF4444</span>, <span class="badge badge-yellow">Maintenance: #F59E0B</span>, <span class="badge badge-blue">Reserved: #3B82F6</span>.</li>
+    </ul>
+
+    <h2>7.2 Backend REST API & Express Architecture</h2>
+    <p>
+      The backend operates on <strong>Node.js</strong> and <strong>Express.js</strong> using <strong>TypeScript</strong>. It is structured into distinct architectural layers:
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>Endpoint</th>
+          <th>HTTP Verb</th>
+          <th>Controller Handler</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><code>/api/patients</code></td><td>GET</td><td><code>getPatients</code></td><td>List patients with search and multi-parameter filters</td></tr>
+        <tr><td><code>/api/patients/:id</code></td><td>GET</td><td><code>getPatientById</code></td><td>Retrieve detailed clinical profile by patient ID</td></tr>
+        <tr><td><code>/api/patients</code></td><td>POST</td><td><code>createPatient</code></td><td>Register new patient with auto-generated ID (<code>PAT-xxxx</code>)</td></tr>
+        <tr><td><code>/api/patients/:id</code></td><td>PUT</td><td><code>updatePatient</code></td><td>Update clinical and demographic patient details</td></tr>
+        <tr><td><code>/api/patients/:id</code></td><td>DELETE</td><td><code>deletePatient</code></td><td>Delete patient record and automatically release assigned bed</td></tr>
+        <tr><td><code>/api/beds</code></td><td>GET</td><td><code>getBeds</code></td><td>Retrieve all 250 beds with department/status filtering</td></tr>
+        <tr><td><code>/api/beds/available</code></td><td>GET</td><td><code>getAvailableBeds</code></td><td>Query available beds in a specified ward</td></tr>
+        <tr><td><code>/api/beds/allocate</code></td><td>POST</td><td><code>allocateBed</code></td><td>Manually assign an available bed to a patient</td></tr>
+        <tr><td><code>/api/beds/smart-allocate</code></td><td>POST</td><td><code>smartAllocate</code></td><td>Execute rule-based auto-allocation for triage queue</td></tr>
+        <tr><td><code>/api/beds/transfer</code></td><td>POST</td><td><code>transferBed</code></td><td>Atomically transfer a patient from one bed to another</td></tr>
+        <tr><td><code>/api/beds/:id</code></td><td>PUT</td><td><code>updateBed</code></td><td>Toggle bed into or out of sanitization maintenance mode</td></tr>
+        <tr><td><code>/api/flow</code></td><td>GET</td><td><code>getFlow</code></td><td>Retrieve grouped patient cards for 4-stage Kanban board</td></tr>
+        <tr><td><code>/api/flow/:id/status</code></td><td>PUT</td><td><code>updateStatus</code></td><td>Advance patient workflow stage</td></tr>
+        <tr><td><code>/api/flow/:id/discharge</code></td><td>POST</td><td><code>dischargePatient</code></td><td>Discharge patient and automatically release occupied bed</td></tr>
+        <tr><td><code>/api/dashboard/stats</code></td><td>GET</td><td><code>getStats</code></td><td>Dynamically compute census metrics from active data</td></tr>
+        <tr><td><code>/api/dashboard/occupancy</code></td><td>GET</td><td><code>getOccupancy</code></td><td>Return distribution payloads for Chart.js doughnut chart</td></tr>
+        <tr><td><code>/api/dashboard/activities</code></td><td>GET</td><td><code>getActivities</code></td><td>Retrieve chronological audit event stream</td></tr>
+      </tbody>
+    </table>
+
+    <h2>7.3 Rule-Based Smart Bed Allocation Engine</h2>
+    <p>
+      Implemented in <code>backend/src/services/allocationService.ts</code>, the allocation algorithm assigns numerical weights to clinical triage priorities:
+    </p>
+    <div class="diagram-box">
+Priority Weight (Wp):
+  Emergency = 4  (Immediate trauma / life-threat)
+  High      = 3  (Urgent clinical oversight)
+  Medium    = 2  (Standard inpatient care)
+  Low       = 1  (Elective / minor observation)
+    </div>
+    <p>
+      The engine sorts waiting patients in descending order of priority weight, queries available beds in the patient's requested ward, falls back to Emergency/ICU beds for trauma cases if needed, marks the bed as <code>Occupied</code>, updates the patient's status to <code>Admitted</code>, logs the event, and writes changes to persistent storage.
+    </p>
+
+    <h2>7.4 In-Memory & JSON Persistent Data Architecture</h2>
+    <p>
+      The platform maintains an in-memory cache synchronized with <code>backend/src/data/mockData.json</code>. The initial dataset provides:
+    </p>
+    <ul style="margin-left: 24px; margin-bottom: 14px;">
+      <li><strong>250 Total Beds:</strong> General Ward (100), ICU (35), Emergency (40), Private Ward (45), Pediatric Ward (30). Breakdown: <strong>170 Occupied, 65 Available, 10 Maintenance, 5 Reserved</strong>.</li>
+      <li><strong>193 Inpatients:</strong> 170 occupying active beds, 15 in the triage queue, and 8 historical discharges.</li>
+      <li><strong>Audit Event Log:</strong> Real-time event log tracking admissions, transfers, and discharges.</li>
+    </ul>
+
+    <h2>7.5 Patient Flow & 4-Stage Kanban Workflow Engine</h2>
+    <p>
+      Patients are tracked across four clinical stages: <strong>Waiting for Admission</strong> $\rightarrow$ <strong>Admitted</strong> $\rightarrow$ <strong>Under Treatment</strong> $\rightarrow$ <strong>Ready for Discharge</strong>. The client renders an interactive four-column Kanban board with stage-specific action controls that update patient state via REST calls.
+    </p>
+
+    <h2>7.6 Automated Discharge & Dynamic Bed Recalculation</h2>
+    <p>
+      Confirming a patient discharge sets the patient's status to <code>Discharged</code>, timestamps <code>dischargeDate</code>, releases the assigned bed to <code>Available</code>, sets <code>lastCleaned</code> to the current time, logs a discharge event, and dynamically updates hospital occupancy and turnover metrics.
+    </p>
+
+    <h2>7.7 Chart.js Data Visualizations & Lucide Integration</h2>
+    <p>
+      The dashboard integrates Chart.js to render an interactive doughnut chart showing bed status distribution (with a center percentage display) and a grouped bar chart comparing occupied vs. available beds across all five wards. Lucide Icons provide clear visual cues across navigation items, stat cards, and modals.
+    </p>
+
+    <h2>7.8 Testing, Verification & End-to-End Test Suite</h2>
+    <p>
+      An automated test suite (<code>test_suite.js</code>) validated all 12 API endpoints, patient CRUD operations, smart allocation, bed transfers, and discharges against the live server, achieving a <strong>100% pass rate with zero runtime errors</strong>.
+    </p>
+
+    <div class="page-break"></div>
+
+    <!-- ========================================================================== -->
+    <!-- 8. OUTPUT SCREENSHOTS & MODULE WALKTHROUGH                                 -->
+    <!-- ========================================================================== -->
+    <h1 class="section-title">8. Output Screenshots & Module Walkthrough</h1>
+
+    <h3>Figure 8.1: Live Application View – Admin Dashboard & Inpatient Census Overview</h3>
+    <p style="font-size: 10pt; color: #64748B;">Route: <code>http://localhost:3000/index.html</code></p>
+    <div class="diagram-box">
++---------------------------------------------------------------------------------------------------------+
+| MediPulse Flow  | Dashboard                                                    [Clock] [Auto-Alloc] [Bell]|
++---------------------------------------------------------------------------------------------------------+
+| [Dashboard]     |  +----------------+  +----------------+  +----------------+  +----------------+       |
+| [Patients] (15) |  | TOTAL BEDS     |  | AVAILABLE BEDS |  | OCCUPIED BEDS  |  | PATIENTS WAIT. |       |
+| [Beds]     (65) |  | 250            |  | 65             |  | 170            |  | 15             |       |
+| [Flow]          |  +----------------+  +----------------+  +----------------+  +----------------+       |
+|                 |                                                                                       |
+| LIVE CENSUS     |  DAILY ADMISSIONS: 28 | DAILY DISCHARGES: 19 | OCCUPANCY: 68% | TURNOVER: 4.6 Days    |
+| Avail: 65       |                                                                                       |
+| Queue: 15       |  +-----------------------------+  +------------------------------------------------+  |
+|                 |  | Bed Occupancy Distribution  |  | Department-wise Bed Availability (Bar Chart)   |  |
+| [Dr. Vance]     |  | [ Doughnut: 68% Occupied ]  |  | [GW: 68/26] [ICU: 26/6] [ER: 28/10]            |  |
+|                 |  +-----------------------------+  +------------------------------------------------+  |
++---------------------------------------------------------------------------------------------------------+
+    </div>
+    <div class="figure-caption">Figure 8.1: Live Application View – Admin Dashboard & Inpatient Census Overview</div>
+
+    <h3>Figure 8.2: Live Application View – Department-wise Bed Capacity Breakdown</h3>
+    <p style="font-size: 10pt; color: #64748B;">Route: <code>http://localhost:3000/index.html#analytics</code></p>
+    <div class="diagram-box">
++---------------------------------------------------------------------------------------------------------+
+| DEPARTMENT-WISE INPATIENT CAPACITY                                                                      |
++---------------------------------------------------------------------------------------------------------+
+| Ward Name        | Total Capacity | Occupied Beds | Available Beds | Maintenance | Occupancy Rate       |
+|------------------|----------------|---------------|----------------|-------------|----------------------|
+| General Ward     | 100 Beds       | 68 Beds       | 26 Beds        | 4 Beds      | 68% [||||||||--]     |
+| Intensive Care   | 35 Beds        | 26 Beds       | 6 Beds         | 2 Beds      | 74% [|||||||||-]     |
+| Emergency        | 40 Beds        | 28 Beds       | 10 Beds        | 1 Bed       | 70% [||||||||--]     |
+| Private Ward     | 45 Beds        | 30 Beds       | 12 Beds        | 2 Beds      | 67% [||||||||--]     |
+| Pediatric Ward   | 30 Beds        | 18 Beds       | 11 Beds        | 1 Bed       | 60% [|||||||---]     |
++---------------------------------------------------------------------------------------------------------+
+    </div>
+    <div class="figure-caption">Figure 8.2: Live Application View – Department-wise Bed Capacity Breakdown</div>
+
+    <h3>Figure 8.3: Live Application View – Patient Directory & Multi-Parameter Filter</h3>
+    <p style="font-size: 10pt; color: #64748B;">Route: <code>http://localhost:3000/patients.html</code></p>
+    <div class="diagram-box">
++---------------------------------------------------------------------------------------------------------+
+| Patient Management                                                                 [+ Add New Patient]  |
++---------------------------------------------------------------------------------------------------------+
+| [Search by name, ID, bed...] | [All Depts v] | [All Statuses v] | [All Priorities v] | [Reset Filters]  |
++---------------------------------------------------------------------------------------------------------+
+| Patient ID | Patient Name    | Age | Gender | Contact       | Department | Priority  | Status   | Actions |
+|------------|-----------------|-----|--------|---------------|------------|-----------|----------|---------|
+| PAT-1002   | Patricia Smith  | 48  | Female | (555) 234-5678| ICU        | Emergency | Admitted | [V][E][D|
+| PAT-1005   | Michael Brown   | 62  | Male   | (555) 345-6789| Emergency  | High      | Treatment| [V][E][D|
+| PAT-1175   | Emily Clark     | 34  | Female | (555) 789-4005| Gen. Ward  | Medium    | Waiting  | [Alloc] |
++---------------------------------------------------------------------------------------------------------+
+    </div>
+    <div class="figure-caption">Figure 8.3: Live Application View – Patient Directory & Multi-Parameter Filter</div>
+
+    <div class="page-break"></div>
+
+    <h3>Figure 8.4: Live Application View – Patient Registration Modal & Triage</h3>
+    <p style="font-size: 10pt; color: #64748B;">Route: <code>http://localhost:3000/patients.html (Add Patient Modal)</code></p>
+    <div class="diagram-box">
++-------------------------------------------------------------------------+
+| [+ Add New Inpatient Registration]                                  [X] |
++-------------------------------------------------------------------------+
+| Patient ID: Auto-generated (e.g. PAT-1195)                              |
+| Full Name: [ Sarah Jenkins                   ]  Age: [ 38 ]             |
+| Gender: [ Female v ]                            Phone: [ +1 (555) 890-12|
+| Department: [ Emergency v ]                     Priority: [ Emergency v]|
+| Admission Date: [ 2026-11-24 ]                                          |
+| Primary Diagnosis: [ Acute Blunt Chest Trauma & Rib Fracture          ] |
+| Residential Address: [ 742 Evergreen Terrace, Cityville               ] |
++-------------------------------------------------------------------------+
+|                                              [Cancel] [Register Patient]|
++-------------------------------------------------------------------------+
+    </div>
+    <div class="figure-caption">Figure 8.4: Live Application View – Patient Registration Modal & Triage</div>
+
+    <h3>Figure 8.5: Live Application View – Comprehensive Patient Medical File Modal</h3>
+    <p style="font-size: 10pt; color: #64748B;">Route: <code>http://localhost:3000/patients.html (View Modal)</code></p>
+    <div class="diagram-box">
++-------------------------------------------------------------------------+
+| [Patient Medical File]                                              [X] |
++-------------------------------------------------------------------------+
+| (SJ)  Sarah Jenkins                                                     |
+|       ID: PAT-1195  *  38 yrs  *  Female                                |
+|       [ Emergency Priority ]   [ Admitted ]                             |
+|-------------------------------------------------------------------------|
+| Assigned Department: Emergency        Bed Number: ER-08 (Trauma Bay 2)  |
+| Admission Date: 2026-11-24            Attending Doctor: Dr. Adams       |
+| Primary Diagnosis: Acute Blunt Chest Trauma & Rib Fracture              |
+| Contact Phone: +1 (555) 890-1234      Address: 742 Evergreen Terrace    |
++-------------------------------------------------------------------------+
+|                                                                 [Close] |
++-------------------------------------------------------------------------+
+    </div>
+    <div class="figure-caption">Figure 8.5: Live Application View – Comprehensive Patient Medical File Modal</div>
+
+    <h3>Figure 8.6: Live Application View – Visual Ward Layout & Bed Management Grid</h3>
+    <p style="font-size: 10pt; color: #64748B;">Route: <code>http://localhost:3000/beds.html</code></p>
+    <div class="diagram-box">
++---------------------------------------------------------------------------------------------------------+
+| Bed Allocation                                                    [Smart Auto-Alloc] [+ Allocate Bed]   |
++---------------------------------------------------------------------------------------------------------+
+| [All Departments] [General Ward] [ICU] [Emergency] [Private Ward] [Pediatric Ward]                      |
+| Filter: [All Statuses v] | Legend: (*) Available  (*) Occupied  (*) Maintenance  (*) Reserved           |
++---------------------------------------------------------------------------------------------------------+
+| ICU (Intensive Care Unit) - 2nd Floor (Critical Care) - 74% Occupied                                    |
+| [26 Occupied] [6 Available] [2 Maintenance] [1 Reserved]                                                |
+|                                                                                                         |
+| +-------------------+  +-------------------+  +-------------------+  +-------------------+              |
+| | ICU-01 [Occupied] |  | ICU-02  [Maint.]  |  | ICU-03 [Occupied] |  | ICU-04 [Available]|              |
+| | John Doe (PAT-101)|  | UV Sterilization  |  | Robert Vance (104)|  | Ready for Intake  |              |
+| | Room 101          |  | Bay 101           |  | Room 102          |  | Room 102          |              |
+| | [Transfer][Disch] |  | [Restore Service] |  | [Transfer][Disch] |  | [Allocate][Maint] |              |
+| +-------------------+  +-------------------+  +-------------------+  +-------------------+              |
++---------------------------------------------------------------------------------------------------------+
+    </div>
+    <div class="figure-caption">Figure 8.6: Live Application View – Visual Ward Layout & Bed Management Grid</div>
+
+    <div class="page-break"></div>
+
+    <h3>Figure 8.7: Live Application View – Smart Rule-Based Bed Allocation Modal</h3>
+    <p style="font-size: 10pt; color: #64748B;">Route: <code>http://localhost:3000/beds.html (Allocate Modal)</code></p>
+    <div class="diagram-box">
++-------------------------------------------------------------------------+
+| [Allocate Bed to Patient]                                           [X] |
++-------------------------------------------------------------------------+
+| Select Waiting Patient:                                                 |
+| [ [EMERGENCY] Sarah Jenkins (PAT-1195) - Emergency Priority         v ] |
+|                                                                         |
+| Target Department:                                                      |
+| [ Emergency                                                         v ] |
+|                                                                         |
+| Select Available Bed:                                                   |
+| [ ER-08 (Trauma Center Bay 2)                                       v ] |
+| 10 beds currently available in Emergency                                |
+|                                                                         |
+| Admission Date: [ 2026-11-24 ]                                          |
++-------------------------------------------------------------------------+
+|                                              [Cancel] [Confirm Alloc.]  |
++-------------------------------------------------------------------------+
+    </div>
+    <div class="figure-caption">Figure 8.7: Live Application View – Smart Rule-Based Bed Allocation Modal</div>
+
+    <h3>Figure 8.8: Live Application View – Patient Bed & Department Transfer Interface</h3>
+    <p style="font-size: 10pt; color: #64748B;">Route: <code>http://localhost:3000/beds.html (Transfer Modal)</code></p>
+    <div class="diagram-box">
++-------------------------------------------------------------------------+
+| [Transfer Patient Bed]                                              [X] |
++-------------------------------------------------------------------------+
+| Patient Name & ID: [ John Doe (PAT-1001)                              ] |
+| Current Bed & Ward: [ ICU-01 - Intensive Care Unit                    ] |
+|                                                                         |
+| Destination Department:                                                 |
+| [ General Ward                                                      v ] |
+|                                                                         |
+| Select Available Destination Bed:                                       |
+| [ GW-112 (3rd Floor - Step-down Room 104)                           v ] |
++-------------------------------------------------------------------------+
+|                                            [Cancel] [Confirm Transfer]  |
++-------------------------------------------------------------------------+
+    </div>
+    <div class="figure-caption">Figure 8.8: Live Application View – Patient Bed & Department Transfer Interface</div>
+
+    <h3>Figure 8.9: Live Application View – 4-Stage Kanban Patient Flow Board</h3>
+    <p style="font-size: 10pt; color: #64748B;">Route: <code>http://localhost:3000/patient-flow.html</code></p>
+    <div class="diagram-box">
++---------------------------------------------------------------------------------------------------------+
+| Patient Flow Management                                                                 [Refresh Census]|
++---------------------------------------------------------------------------------------------------------+
+| TOTAL ADM: 193 | DISCHARGES: 18 | CURRENTLY ADMITTED: 170 | AVG STAY: 4.6 Days | TURNOVER: 68%          |
++---------------------------------------------------------------------------------------------------------+
+| 1. WAITING (15)       | 2. ADMITTED (42)      | 3. TREATMENT (85)     | 4. READY DISCHARGE (43)         |
+|-----------------------|-----------------------|-----------------------|---------------------------------|
+| [Sarah Jenkins]       | [Robert Vance]        | [David Miller]        | [James Smith]                   |
+| ID: PAT-1195          | ID: PAT-1004          | ID: PAT-1022          | ID: PAT-1001                    |
+| Ward: Emergency       | Bed: ICU-03           | Bed: GW-115           | Bed: PW-05                      |
+| [Emergency Priority]  | [High Priority]       | [Medium Priority]     | [Low Priority]                  |
+| [Allocate Bed]        | [Start Treatment]     | [Ready for Discharge] | [Release & Discharge]           |
++---------------------------------------------------------------------------------------------------------+
+    </div>
+    <div class="figure-caption">Figure 8.9: Live Application View – 4-Stage Kanban Patient Flow Board</div>
+
+    <h3>Figure 8.10: Live Application View – Automated Discharge & Movement Timeline</h3>
+    <p style="font-size: 10pt; color: #64748B;">Route: <code>http://localhost:3000/patient-flow.html#timeline</code></p>
+    <div class="diagram-box">
++---------------------------------------------------------------------------------------------------------+
+| RECENT PATIENT MOVEMENT TIMELINE                                                                        |
++---------------------------------------------------------------------------------------------------------+
+| (o) Patient Discharged & Bed Released                                                   Just now        |
+|     Completed discharge protocol for James Smith (PAT-1001). Bed PW-05 marked Available.                |
+|                                                                                                         |
+| (o) Patient Transferred to Step-Down Ward                                               14m ago         |
+|     Transferred John Doe from ICU-01 to General Ward GW-112 after stabilization.                        |
+|                                                                                                         |
+| (o) Smart Bed Allocated                                                                 32m ago         |
+|     Allocated Bed ER-08 to Sarah Jenkins (Emergency Priority) in Emergency Trauma Unit.                |
+|                                                                                                         |
+| (o) New Inpatient Registered                                                            45m ago         |
+|     Sarah Jenkins registered in triage queue with Acute Blunt Chest Trauma.                             |
++---------------------------------------------------------------------------------------------------------+
+    </div>
+    <div class="figure-caption">Figure 8.10: Live Application View – Automated Discharge & Movement Timeline</div>
+
+    <div class="page-break"></div>
+
+    <!-- ========================================================================== -->
+    <!-- 9. CONCLUSION & FUTURE ENHANCEMENTS                                        -->
+    <!-- ========================================================================== -->
+    <h1 class="section-title">9. Conclusion & Future Enhancements</h1>
+
+    <h2>9.1 Project Summary</h2>
+    <p>
+      The course project titled <strong>“Design and Development of a Smart Hospital Bed Allocation and Patient Flow Management System (MediPulse Flow)”</strong> successfully delivered a production-grade web application for real-time hospital administration. By replacing manual spreadsheets and phone coordination with an automated rule-based allocation engine and an interactive four-stage Kanban workflow, MediPulse Flow eliminates admission bottlenecks, prevents double-allocations, and accelerates patient flow.
+    </p>
+    <p>The project met all engineering requirements:</p>
+    <ul style="margin-left: 24px; margin-bottom: 16px;">
+      <li>A lightweight, responsive frontend built with <strong>HTML5</strong>, <strong>CSS3</strong>, and <strong>TypeScript / ES6+ JavaScript</strong> with <strong>Chart.js</strong> and <strong>Lucide Icons</strong>.</li>
+      <li>An <strong>Express.js</strong> REST API in TypeScript providing full CRUD capabilities for patients, beds, workflow stages, and census metrics.</li>
+      <li>An in-memory synchronized JSON storage engine (<code>mockData.json</code>) pre-populated with <strong>250 beds</strong> and realistic patient records, eliminating external database server dependencies.</li>
+      <li>An automated integration test suite verifying all 12 API endpoints with a 100% pass rate.</li>
+      <li>Source code managed under Git and hosted on GitHub at <a href="https://github.com/Pranav9491/SESD-Project" target="_blank">https://github.com/Pranav9491/SESD-Project</a>.</li>
+    </ul>
+
+    <h2>9.2 Future Enhancements</h2>
+    <p>Future improvements planned for MediPulse Flow include:</p>
+    <ol style="margin-left: 24px; margin-bottom: 16px;">
+      <li><strong>IoT Smart Bed Telemetry:</strong> Connecting physical pressure sensors to beds to detect patient occupancy and vacation automatically.</li>
+      <li><strong>Machine Learning Length of Stay (LoS) Prediction:</strong> Training regression models on diagnosis and vital signs data to predict discharge readiness days in advance.</li>
+      <li><strong>Role-Based Access Control (RBAC) & SSO:</strong> Implementing JWT/OAuth2 authentication with distinct permission scopes for triage nurses, ward supervisors, and chief medical officers.</li>
+      <li><strong>HL7 / FHIR Interoperability:</strong> Adding Fast Healthcare Interoperability Resources (FHIR) endpoints for bidirectional synchronization with external Electronic Health Record (EHR) systems.</li>
+    </ol>
+
+    <!-- ========================================================================== -->
+    <!-- 10. REFERENCES                                                             -->
+    <!-- ========================================================================== -->
+    <h1 class="section-title">10. References</h1>
+    <ol style="margin-left: 24px; margin-bottom: 24px; line-height: 1.8;">
+      <li><strong>Pressman, R. S., & Maxim, B. R.</strong> (2020). <em>Software Engineering: A Practitioner’s Approach</em> (9th ed.). McGraw-Hill Education.</li>
+      <li><strong>Sommerville, I.</strong> (2016). <em>Software Engineering</em> (10th ed.). Pearson Education.</li>
+      <li><strong>MDN Web Docs</strong> (2024). <em>HTML5, CSS3, and ECMAScript 2024 Reference Guides</em>. Mozilla Corporation. Available at: <a href="https://developer.mozilla.org/" target="_blank">https://developer.mozilla.org/</a></li>
+      <li><strong>Express.js Documentation</strong> (2024). <em>Fast, unopinionated, minimalist web framework for Node.js</em>. Available at: <a href="https://expressjs.com/" target="_blank">https://expressjs.com/</a></li>
+      <li><strong>TypeScript Documentation</strong> (2024). <em>TypeScript Language Specification & Handbook</em>. Microsoft Corporation. Available at: <a href="https://www.typescriptlang.org/docs/" target="_blank">https://www.typescriptlang.org/docs/</a></li>
+      <li><strong>Chart.js Community</strong> (2024). <em>Open source HTML5 Charts for modern web development</em>. Available at: <a href="https://www.chartjs.org/docs/" target="_blank">https://www.chartjs.org/docs/</a></li>
+      <li><strong>Lucide Contributors</strong> (2024). <em>Beautiful & consistent icon toolkit for modern web applications</em>. Available at: <a href="https://lucide.dev/" target="_blank">https://lucide.dev/</a></li>
+      <li><strong>Proudlove, N., Boaden, R., & Jorgensen, J.</strong> (2007). <em>Developing bed managers: The why and how of bed management in acute hospitals</em>. Journal of Nursing Management, 15(1), 34–42.</li>
+      <li><strong>Litvak, E., & Bisognano, M.</strong> (2011). <em>More patients, less payment: Increasing hospital efficiency in the aftermath of health reform</em>. Health Affairs, 30(1), 76–80.</li>
+      <li><strong>GitHub Repository</strong>: <em>MediPulse Flow: Smart Hospital Bed Allocation and Patient Flow Management System</em>. Available at: <a href="https://github.com/Pranav9491/SESD-Project" target="_blank">https://github.com/Pranav9491/SESD-Project</a></li>
+    </ol>
+
+  </div>
+
+</body>
+</html>
