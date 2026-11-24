@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Smart Hospital Bed Allocation & Patient Flow Management</title>
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <!-- Lucide Icons & Chart.js -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="brand-icon">
+        <i data-lucide="cross"></i>
+      </div>
+      <div class="brand-title">
+        <h1>MediPulse Flow</h1>
+        <span>Bed & Flow Ops</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-title">Main Menu</div>
+      <a href="index.html" class="nav-item active">
+        <i data-lucide="layout-dashboard"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="patients.html" class="nav-item">
+        <i data-lucide="users"></i>
+        <span>Patient Management</span>
+        <span class="nav-badge amber" id="sidebar-badge-wait">15</span>
+      </a>
+      <a href="beds.html" class="nav-item">
+        <i data-lucide="bed"></i>
+        <span>Bed Allocation</span>
+        <span class="nav-badge teal" id="sidebar-badge-avail">65</span>
+      </a>
+      <a href="patient-flow.html" class="nav-item">
+        <i data-lucide="git-pull-request"></i>
+        <span>Patient Flow</span>
+      </a>
+
+      <div class="nav-section-title">System Status</div>
+      <div class="sidebar-live-card">
+        <div class="sidebar-live-title">
+          <span>Live Census</span>
+          <div class="live-pulse"></div>
+        </div>
+        <div class="sidebar-metrics">
+          <div class="metric-pill">
+            <span class="val" id="sidebar-avail-val" style="color: #10B981;">65</span>
+            <span class="lbl">Available</span>
+          </div>
+          <div class="metric-pill">
+            <span class="val" id="sidebar-wait-val" style="color: #F59E0B;">15</span>
+            <span class="lbl">In Queue</span>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="admin-avatar">AD</div>
+      <div class="admin-info">
+        <span class="name">Dr. Vance</span>
+        <span class="role">Chief of Operations</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- APP CONTENT WRAPPER -->
+  <div class="app-container">
+    <!-- TOP HEADER NAVBAR -->
+    <header class="top-header">
+      <div class="header-left">
+        <div class="page-title-group">
+          <h2>Dashboard</h2>
+          <div class="page-breadcrumb">Smart Bed Allocation &amp; Patient Flow &bull; Operational Overview</div>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <!-- Live Clock -->
+        <div class="live-clock-badge">
+          <i data-lucide="clock"></i>
+          <span id="live-clock">--:--:--</span>
+        </div>
+
+        <!-- Quick Smart Auto Allocate Button -->
+        <button class="btn btn-accent btn-sm" id="btn-quick-smart-allocate">
+          <i data-lucide="zap"></i>
+          <span>Auto-Allocate Next</span>
+        </button>
+
+        <!-- Notification Dropdown -->
+        <div class="notification-wrapper">
+          <button class="icon-btn" id="notif-btn" title="View Recent Activities">
+            <i data-lucide="bell"></i>
+            <span class="notification-badge"></span>
+          </button>
+          <div class="dropdown-menu" id="notif-dropdown">
+            <div class="dropdown-header">
+              <h4>Activity Notifications</h4>
+              <span class="badge badge-available">Live Stream</span>
+            </div>
+            <div class="dropdown-list" id="notif-list">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN PAGE CONTENT -->
+    <main class="main-content">
+
+      <!-- 4 SUMMARY STATISTIC CARDS -->
+      <div class="stat-cards-grid">
+        <!-- 1. Total Beds -->
+        <div class="stat-card navy">
+          <div class="stat-icon navy">
+            <i data-lucide="hotel"></i>
+          </div>
+          <div class="stat-details">
+            <span class="stat-title">Total Beds</span>
+            <div class="stat-value" id="stat-total-beds">250</div>
+            <span class="stat-subtitle"><i data-lucide="layers" style="width: 14px;"></i> 5 Active Departments</span>
+          </div>
+        </div>
+
+        <!-- 2. Available Beds -->
+        <div class="stat-card green">
+          <div class="stat-icon green">
+            <i data-lucide="check-circle-2"></i>
+          </div>
+          <div class="stat-details">
+            <span class="stat-title">Available Beds</span>
+            <div class="stat-value" id="stat-available-beds" style="color: #10B981;">65</div>
+            <span class="stat-subtitle" style="color: #059669;"><i data-lucide="arrow-up-right" style="width: 14px;"></i> Ready for allocation</span>
+          </div>
+        </div>
+
+        <!-- 3. Occupied Beds -->
+        <div class="stat-card red">
+          <div class="stat-icon red">
+            <i data-lucide="user-check"></i>
+          </div>
+          <div class="stat-details">
+            <span class="stat-title">Occupied Beds</span>
+            <div class="stat-value" id="stat-occupied-beds" style="color: #EF4444;">170</div>
+            <span class="stat-subtitle" style="color: #DC2626;"><i data-lucide="activity" style="width: 14px;"></i> Active Inpatients</span>
+          </div>
+        </div>
+
+        <!-- 4. Patients Waiting -->
+        <div class="stat-card amber">
+          <div class="stat-icon amber">
+            <i data-lucide="clock"></i>
+          </div>
+          <div class="stat-details">
+            <span class="stat-title">Patients Waiting</span>
+            <div class="stat-value" id="stat-waiting-patients" style="color: #F59E0B;">15</div>
+            <span class="stat-subtitle" style="color: #D97706;"><i data-lucide="alert-circle" style="width: 14px;"></i> Triage admission queue</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION E: DASHBOARD ANALYTICS BANNER -->
+      <div class="analytics-banner">
+        <div class="analytics-metric">
+          <span class="lbl">Daily Admissions</span>
+          <span class="val" id="metric-daily-adm">28</span>
+          <span class="sub">+14% vs 7-day average</span>
+        </div>
+        <div class="analytics-metric">
+          <span class="lbl">Daily Discharges</span>
+          <span class="val" id="metric-daily-dis">19</span>
+          <span class="sub">95% discharge compliance</span>
+        </div>
+        <div class="analytics-metric">
+          <span class="lbl">Occupancy Percentage</span>
+          <span class="val" id="metric-occupancy-rate">68%</span>
+          <span class="sub">Within target safe range (< 85%)</span>
+        </div>
+        <div class="analytics-metric">
+          <span class="lbl">Bed Turnover Rate</span>
+          <span class="val" id="metric-turnover-rate">4.6 Days</span>
+          <span class="sub">Average length of stay</span>
+        </div>
+      </div>
+
+      <!-- CHARTS SECTION: A (Bed Occupancy) & B (Department-wise Availability) -->
+      <div class="charts-grid">
+        <!-- A. Bed Occupancy Chart -->
+        <div class="card">
+          <div class="card-header">
+            <h3><i data-lucide="pie-chart"></i> Bed Occupancy Distribution</h3>
+            <span class="badge badge-waiting" id="occupancy-date-badge">Live Status</span>
+          </div>
+          <div class="card-body">
+            <div class="chart-wrapper">
+              <canvas id="occupancyDoughnutChart"></canvas>
+              <div class="chart-center-text">
+                <div class="rate" id="chart-center-percent">68%</div>
+                <div class="label">Occupied</div>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-around; margin-top: 16px; font-size: 0.78rem;">
+              <span style="color: #EF4444;"><span style="display:inline-block; width:10px; height:10px; background:#EF4444; border-radius:50%; margin-right:4px;"></span> Occupied (170)</span>
+              <span style="color: #10B981;"><span style="display:inline-block; width:10px; height:10px; background:#10B981; border-radius:50%; margin-right:4px;"></span> Available (65)</span>
+              <span style="color: #F59E0B;"><span style="display:inline-block; width:10px; height:10px; background:#F59E0B; border-radius:50%; margin-right:4px;"></span> Maint. (10)</span>
+              <span style="color: #3B82F6;"><span style="display:inline-block; width:10px; height:10px; background:#3B82F6; border-radius:50%; margin-right:4px;"></span> Reserved (5)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- B. Department-wise Bed Availability -->
+        <div class="card">
+          <div class="card-header">
+            <h3><i data-lucide="bar-chart-3"></i> Department-wise Bed Availability</h3>
+            <span class="badge badge-available">5 Departments</span>
+          </div>
+          <div class="card-body">
+            <div class="chart-wrapper">
+              <canvas id="departmentBarChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTTOM ROW: C (Recent Admissions) & D (Recent Activities) -->
+      <div class="dashboard-bottom-grid">
+        <!-- C. Recent Patient Admissions Table -->
+        <div class="card">
+          <div class="card-header">
+            <h3><i data-lucide="clipboard-list"></i> Recent Patient Admissions</h3>
+            <a href="patients.html" class="btn btn-outline btn-sm">View All Patients</a>
+          </div>
+          <div class="card-body" style="padding: 0;">
+            <div class="table-responsive">
+              <table class="data-table" id="admissions-table">
+                <thead>
+                  <tr>
+                    <th>Patient ID</th>
+                    <th>Patient Name</th>
+                    <th>Department</th>
+                    <th>Bed Number</th>
+                    <th>Admission Date</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="admissions-table-body">
+                  <tr>
+                    <td colspan="6" style="text-align: center; padding: 30px; color: #64748B;">
+                      Loading admission records...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- D. Recent Activities -->
+        <div class="card">
+          <div class="card-header">
+            <h3><i data-lucide="activity"></i> Recent Activities</h3>
+            <span class="badge badge-waiting">Event Log</span>
+          </div>
+          <div class="card-body">
+            <div class="activity-feed" id="dashboard-activity-feed">
+              <div style="text-align: center; padding: 20px; color: #64748B;">
+                Loading recent activities...
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/app.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

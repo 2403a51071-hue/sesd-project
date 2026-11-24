@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient Flow Management - Smart Hospital Bed Allocation</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/flow.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="brand-icon">
+        <i data-lucide="cross"></i>
+      </div>
+      <div class="brand-title">
+        <h1>MediPulse Flow</h1>
+        <span>Bed & Flow Ops</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-title">Main Menu</div>
+      <a href="index.html" class="nav-item">
+        <i data-lucide="layout-dashboard"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="patients.html" class="nav-item">
+        <i data-lucide="users"></i>
+        <span>Patient Management</span>
+        <span class="nav-badge amber" id="sidebar-badge-wait">15</span>
+      </a>
+      <a href="beds.html" class="nav-item">
+        <i data-lucide="bed"></i>
+        <span>Bed Allocation</span>
+        <span class="nav-badge teal" id="sidebar-badge-avail">65</span>
+      </a>
+      <a href="patient-flow.html" class="nav-item active">
+        <i data-lucide="git-pull-request"></i>
+        <span>Patient Flow</span>
+      </a>
+
+      <div class="nav-section-title">System Status</div>
+      <div class="sidebar-live-card">
+        <div class="sidebar-live-title">
+          <span>Live Census</span>
+          <div class="live-pulse"></div>
+        </div>
+        <div class="sidebar-metrics">
+          <div class="metric-pill">
+            <span class="val" id="sidebar-avail-val" style="color: #10B981;">65</span>
+            <span class="lbl">Available</span>
+          </div>
+          <div class="metric-pill">
+            <span class="val" id="sidebar-wait-val" style="color: #F59E0B;">15</span>
+            <span class="lbl">In Queue</span>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="admin-avatar">AD</div>
+      <div class="admin-info">
+        <span class="name">Dr. Vance</span>
+        <span class="role">Chief of Operations</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- APP MAIN CONTAINER -->
+  <div class="app-container">
+    <!-- TOP HEADER -->
+    <header class="top-header">
+      <div class="header-left">
+        <div class="page-title-group">
+          <h2>Patient Flow Management</h2>
+          <div class="page-breadcrumb">Inpatient Workflow &bull; Triage &bull; Admission &bull; Treatment &bull; Discharge</div>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <!-- Live Clock -->
+        <div class="live-clock-badge">
+          <i data-lucide="clock"></i>
+          <span id="live-clock">--:--:--</span>
+        </div>
+
+        <button class="btn btn-outline btn-sm" id="btn-refresh-flow">
+          <i data-lucide="refresh-cw"></i>
+          <span>Refresh Workflow</span>
+        </button>
+
+        <!-- Notification Dropdown -->
+        <div class="notification-wrapper">
+          <button class="icon-btn" id="notif-btn" title="View Recent Activities">
+            <i data-lucide="bell"></i>
+            <span class="notification-badge"></span>
+          </button>
+          <div class="dropdown-menu" id="notif-dropdown">
+            <div class="dropdown-header">
+              <h4>Activity Notifications</h4>
+              <span class="badge badge-available">Live Stream</span>
+            </div>
+            <div class="dropdown-list" id="notif-list"></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- SECTION E: PATIENT FLOW ANALYTICS ROW -->
+      <div class="flow-analytics-row">
+        <div class="flow-stat-box">
+          <span class="lbl">Total Admissions</span>
+          <span class="val" id="flow-total-adm">193</span>
+          <span class="sub">Cumulative inpatients</span>
+        </div>
+        <div class="flow-stat-box">
+          <span class="lbl">Total Discharges</span>
+          <span class="val" id="flow-total-dis" style="color: #10B981;">18</span>
+          <span class="sub">Successful discharges</span>
+        </div>
+        <div class="flow-stat-box">
+          <span class="lbl">Currently Admitted</span>
+          <span class="val" id="flow-curr-adm" style="color: #EF4444;">170</span>
+          <span class="sub">Active bed occupants</span>
+        </div>
+        <div class="flow-stat-box">
+          <span class="lbl">Average Length of Stay</span>
+          <span class="val" id="flow-avg-stay" style="color: #13A89E;">4.6 Days</span>
+          <span class="sub">Standard clinical target</span>
+        </div>
+        <div class="flow-stat-box">
+          <span class="lbl">Bed Turnover Rate</span>
+          <span class="val" id="flow-turnover">68%</span>
+          <span class="sub">High-efficiency index</span>
+        </div>
+      </div>
+
+      <!-- KANBAN-STYLE BOARD (4 COLUMNS) -->
+      <div class="kanban-board">
+        <!-- 1. Waiting for Admission -->
+        <div class="kanban-col">
+          <div class="kanban-col-header">
+            <div class="kanban-col-title">
+              <span class="kanban-col-dot col-1"></span>
+              <span>1. Waiting Admission</span>
+            </div>
+            <span class="kanban-col-count" id="count-waiting">0</span>
+          </div>
+          <div class="kanban-cards-list" id="col-waiting-cards">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <!-- 2. Admitted -->
+        <div class="kanban-col">
+          <div class="kanban-col-header">
+            <div class="kanban-col-title">
+              <span class="kanban-col-dot col-2"></span>
+              <span>2. Admitted</span>
+            </div>
+            <span class="kanban-col-count" id="count-admitted">0</span>
+          </div>
+          <div class="kanban-cards-list" id="col-admitted-cards">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <!-- 3. Under Treatment -->
+        <div class="kanban-col">
+          <div class="kanban-col-header">
+            <div class="kanban-col-title">
+              <span class="kanban-col-dot col-3"></span>
+              <span>3. Under Treatment</span>
+            </div>
+            <span class="kanban-col-count" id="count-treatment">0</span>
+          </div>
+          <div class="kanban-cards-list" id="col-treatment-cards">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <!-- 4. Ready for Discharge -->
+        <div class="kanban-col">
+          <div class="kanban-col-header">
+            <div class="kanban-col-title">
+              <span class="kanban-col-dot col-4"></span>
+              <span>4. Ready for Discharge</span>
+            </div>
+            <span class="kanban-col-count" id="count-ready">0</span>
+          </div>
+          <div class="kanban-cards-list" id="col-ready-cards">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <!-- RECENT PATIENT MOVEMENT TIMELINE -->
+      <div class="card">
+        <div class="card-header">
+          <h3>
+            <i data-lucide="clock"></i>
+            <span>Recent Patient Movement Timeline</span>
+          </h3>
+          <span class="badge badge-waiting">Operational Traceability</span>
+        </div>
+        <div class="card-body">
+          <div class="timeline-feed" id="flow-timeline-feed">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/app.js"></script>
+  <script src="js/patient-flow.js"></script>
+</body>
+</html>

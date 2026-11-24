@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Bed Allocation - Smart Hospital Bed Allocation & Patient Flow</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/beds.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="brand-icon">
+        <i data-lucide="cross"></i>
+      </div>
+      <div class="brand-title">
+        <h1>MediPulse Flow</h1>
+        <span>Bed & Flow Ops</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-title">Main Menu</div>
+      <a href="index.html" class="nav-item">
+        <i data-lucide="layout-dashboard"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="patients.html" class="nav-item">
+        <i data-lucide="users"></i>
+        <span>Patient Management</span>
+        <span class="nav-badge amber" id="sidebar-badge-wait">15</span>
+      </a>
+      <a href="beds.html" class="nav-item active">
+        <i data-lucide="bed"></i>
+        <span>Bed Allocation</span>
+        <span class="nav-badge teal" id="sidebar-badge-avail">65</span>
+      </a>
+      <a href="patient-flow.html" class="nav-item">
+        <i data-lucide="git-pull-request"></i>
+        <span>Patient Flow</span>
+      </a>
+
+      <div class="nav-section-title">System Status</div>
+      <div class="sidebar-live-card">
+        <div class="sidebar-live-title">
+          <span>Live Census</span>
+          <div class="live-pulse"></div>
+        </div>
+        <div class="sidebar-metrics">
+          <div class="metric-pill">
+            <span class="val" id="sidebar-avail-val" style="color: #10B981;">65</span>
+            <span class="lbl">Available</span>
+          </div>
+          <div class="metric-pill">
+            <span class="val" id="sidebar-wait-val" style="color: #F59E0B;">15</span>
+            <span class="lbl">In Queue</span>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="admin-avatar">AD</div>
+      <div class="admin-info">
+        <span class="name">Dr. Vance</span>
+        <span class="role">Chief of Operations</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- APP CONTENT WRAPPER -->
+  <div class="app-container">
+    <!-- TOP HEADER -->
+    <header class="top-header">
+      <div class="header-left">
+        <div class="page-title-group">
+          <h2>Bed Allocation</h2>
+          <div class="page-breadcrumb">Smart Bed Management &bull; Visual Inpatient Ward Layout</div>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <!-- Live Clock -->
+        <div class="live-clock-badge">
+          <i data-lucide="clock"></i>
+          <span id="live-clock">--:--:--</span>
+        </div>
+
+        <!-- Smart Rule-Based Auto-Allocate Button -->
+        <button class="btn btn-accent btn-sm" id="btn-smart-auto-allocate" title="Rule-Based: Emergency & High Priority First">
+          <i data-lucide="zap"></i>
+          <span>Smart Auto-Allocate</span>
+        </button>
+
+        <!-- Manual Allocate Bed Button -->
+        <button class="btn btn-primary btn-sm" id="btn-open-manual-allocate">
+          <i data-lucide="plus-circle"></i>
+          <span>Allocate Bed</span>
+        </button>
+
+        <!-- Notification Dropdown -->
+        <div class="notification-wrapper">
+          <button class="icon-btn" id="notif-btn" title="View Recent Activities">
+            <i data-lucide="bell"></i>
+            <span class="notification-badge"></span>
+          </button>
+          <div class="dropdown-menu" id="notif-dropdown">
+            <div class="dropdown-header">
+              <h4>Activity Notifications</h4>
+              <span class="badge badge-available">Live Stream</span>
+            </div>
+            <div class="dropdown-list" id="notif-list"></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- 4 SUMMARY CARDS -->
+      <div class="stat-cards-grid">
+        <!-- 1. Total Beds -->
+        <div class="stat-card navy">
+          <div class="stat-icon navy">
+            <i data-lucide="hotel"></i>
+          </div>
+          <div class="stat-details">
+            <span class="stat-title">Total Beds</span>
+            <div class="stat-value" id="bed-summary-total">250</div>
+            <span class="stat-subtitle">Across 5 hospital wards</span>
+          </div>
+        </div>
+
+        <!-- 2. Available Beds (Green) -->
+        <div class="stat-card green">
+          <div class="stat-icon green">
+            <i data-lucide="check-circle-2"></i>
+          </div>
+          <div class="stat-details">
+            <span class="stat-title">Available Beds</span>
+            <div class="stat-value" id="bed-summary-avail" style="color: #10B981;">65</div>
+            <span class="stat-subtitle" style="color: #059669;">Ready for admission</span>
+          </div>
+        </div>
+
+        <!-- 3. Occupied Beds (Red) -->
+        <div class="stat-card red">
+          <div class="stat-icon red">
+            <i data-lucide="user-x"></i>
+          </div>
+          <div class="stat-details">
+            <span class="stat-title">Occupied Beds</span>
+            <div class="stat-value" id="bed-summary-occ" style="color: #EF4444;">170</div>
+            <span class="stat-subtitle" style="color: #DC2626;">Inpatient census</span>
+          </div>
+        </div>
+
+        <!-- 4. Maintenance Beds (Yellow) -->
+        <div class="stat-card amber">
+          <div class="stat-icon amber">
+            <i data-lucide="wrench"></i>
+          </div>
+          <div class="stat-details">
+            <span class="stat-title">Maintenance Beds</span>
+            <div class="stat-value" id="bed-summary-maint" style="color: #F59E0B;">10</div>
+            <span class="stat-subtitle" style="color: #D97706;">Sanitization &amp; inspection</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTROLS & FILTER TOOLBAR -->
+      <div class="bed-controls-bar">
+        <!-- Department Tabs -->
+        <div class="bed-tabs-group" id="dept-tabs">
+          <button class="bed-tab-btn active" data-dept="All">All Departments</button>
+          <button class="bed-tab-btn" data-dept="General Ward">General Ward</button>
+          <button class="bed-tab-btn" data-dept="ICU">ICU</button>
+          <button class="bed-tab-btn" data-dept="Emergency">Emergency</button>
+          <button class="bed-tab-btn" data-dept="Private Ward">Private Ward</button>
+          <button class="bed-tab-btn" data-dept="Pediatric Ward">Pediatric Ward</button>
+        </div>
+
+        <div class="bed-actions-group">
+          <!-- Status Filter -->
+          <select id="bed-status-filter" class="filter-select">
+            <option value="All">All Bed Statuses</option>
+            <option value="Available">Available (Green)</option>
+            <option value="Occupied">Occupied (Red)</option>
+            <option value="Maintenance">Maintenance (Yellow)</option>
+            <option value="Reserved">Reserved (Blue)</option>
+          </select>
+
+          <!-- Color Legend -->
+          <div class="bed-legend-box">
+            <div class="legend-item"><span class="legend-dot green"></span> Available</div>
+            <div class="legend-item"><span class="legend-dot red"></span> Occupied</div>
+            <div class="legend-item"><span class="legend-dot yellow"></span> Maintenance</div>
+            <div class="legend-item"><span class="legend-dot blue"></span> Reserved</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VISUAL BED MANAGEMENT CONTAINER -->
+      <div id="departments-bed-container">
+        <!-- Rendered dynamically by department -->
+        <div style="text-align: center; padding: 50px; color: #64748B;">
+          Loading visual bed layout...
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- MODAL A: MANUAL ALLOCATE BED -->
+  <div class="modal-overlay" id="modal-allocate-bed">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3><i data-lucide="check-square"></i> Allocate Bed to Patient</h3>
+        <button class="modal-close-btn" data-close="modal-allocate-bed">&times;</button>
+      </div>
+      <form id="form-allocate-bed">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label required">Select Waiting Patient</label>
+            <select id="alloc-patient-select" class="form-control" required>
+              <option value="">-- Choose Patient from Queue --</option>
+            </select>
+            <small style="color: #64748B; font-size: 0.75rem; margin-top: 4px;">
+              Emergency and High-priority patients are marked for expedited placement.
+            </small>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label required">Target Department</label>
+            <select id="alloc-dept-select" class="form-control" required>
+              <option value="General Ward">General Ward</option>
+              <option value="ICU">ICU</option>
+              <option value="Emergency">Emergency</option>
+              <option value="Private Ward">Private Ward</option>
+              <option value="Pediatric Ward">Pediatric Ward</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label required">Select Available Bed</label>
+            <select id="alloc-bed-select" class="form-control" required>
+              <option value="">-- Select Available Bed --</option>
+            </select>
+            <small id="alloc-bed-hint" style="color: #059669; font-size: 0.75rem; margin-top: 4px;"></small>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Priority Level (Assigned)</label>
+            <input type="text" id="alloc-priority-preview" class="form-control" disabled style="background:#F8FAFC;">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label required">Admission Date</label>
+            <input type="date" id="alloc-date" class="form-control" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline btn-sm" data-close="modal-allocate-bed">Cancel</button>
+          <button type="submit" class="btn btn-accent btn-sm">
+            <i data-lucide="check"></i>
+            <span>Confirm Allocation</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL B: BED TRANSFER -->
+  <div class="modal-overlay" id="modal-transfer-bed">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3><i data-lucide="repeat"></i> Transfer Patient Bed</h3>
+        <button class="modal-close-btn" data-close="modal-transfer-bed">&times;</button>
+      </div>
+      <form id="form-transfer-bed">
+        <input type="hidden" id="transfer-patient-id">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Patient Name &amp; ID</label>
+            <input type="text" id="transfer-patient-name" class="form-control" disabled style="background:#F8FAFC; font-weight:600;">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Current Bed &amp; Ward</label>
+            <input type="text" id="transfer-current-bed" class="form-control" disabled style="background:#F8FAFC;">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label required">Destination Department</label>
+            <select id="transfer-dept-select" class="form-control" required>
+              <option value="General Ward">General Ward</option>
+              <option value="ICU">ICU</option>
+              <option value="Emergency">Emergency</option>
+              <option value="Private Ward">Private Ward</option>
+              <option value="Pediatric Ward">Pediatric Ward</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label required">Select Available Destination Bed</label>
+            <select id="transfer-bed-select" class="form-control" required>
+              <option value="">-- Choose Available Bed --</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline btn-sm" data-close="modal-transfer-bed">Cancel</button>
+          <button type="submit" class="btn btn-accent btn-sm">
+            <i data-lucide="arrow-right-left"></i>
+            <span>Confirm Transfer</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/app.js"></script>
+  <script src="js/beds.js"></script>
+</body>
+</html>

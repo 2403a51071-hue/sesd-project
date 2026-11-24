@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient Management - Smart Hospital Bed Allocation & Patient Flow Management</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/patients.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="brand-icon">
+        <i data-lucide="cross"></i>
+      </div>
+      <div class="brand-title">
+        <h1>MediPulse Flow</h1>
+        <span>Bed & Flow Ops</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-title">Main Menu</div>
+      <a href="index.html" class="nav-item">
+        <i data-lucide="layout-dashboard"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="patients.html" class="nav-item active">
+        <i data-lucide="users"></i>
+        <span>Patient Management</span>
+        <span class="nav-badge amber" id="sidebar-badge-wait">15</span>
+      </a>
+      <a href="beds.html" class="nav-item">
+        <i data-lucide="bed"></i>
+        <span>Bed Allocation</span>
+        <span class="nav-badge teal" id="sidebar-badge-avail">65</span>
+      </a>
+      <a href="patient-flow.html" class="nav-item">
+        <i data-lucide="git-pull-request"></i>
+        <span>Patient Flow</span>
+      </a>
+
+      <div class="nav-section-title">System Status</div>
+      <div class="sidebar-live-card">
+        <div class="sidebar-live-title">
+          <span>Live Census</span>
+          <div class="live-pulse"></div>
+        </div>
+        <div class="sidebar-metrics">
+          <div class="metric-pill">
+            <span class="val" id="sidebar-avail-val" style="color: #10B981;">65</span>
+            <span class="lbl">Available</span>
+          </div>
+          <div class="metric-pill">
+            <span class="val" id="sidebar-wait-val" style="color: #F59E0B;">15</span>
+            <span class="lbl">In Queue</span>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="admin-avatar">AD</div>
+      <div class="admin-info">
+        <span class="name">Dr. Vance</span>
+        <span class="role">Chief of Operations</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- APP CONTENT WRAPPER -->
+  <div class="app-container">
+    <!-- TOP HEADER -->
+    <header class="top-header">
+      <div class="header-left">
+        <div class="page-title-group">
+          <h2>Patient Management</h2>
+          <div class="page-breadcrumb">Inpatient Directory &bull; Registration &bull; Clinical Records</div>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <!-- Live Clock -->
+        <div class="live-clock-badge">
+          <i data-lucide="clock"></i>
+          <span id="live-clock">--:--:--</span>
+        </div>
+
+        <!-- Add Patient Button -->
+        <button class="btn btn-accent btn-sm" id="btn-open-add-modal">
+          <i data-lucide="user-plus"></i>
+          <span>Add New Patient</span>
+        </button>
+
+        <!-- Notification Dropdown -->
+        <div class="notification-wrapper">
+          <button class="icon-btn" id="notif-btn" title="View Recent Activities">
+            <i data-lucide="bell"></i>
+            <span class="notification-badge"></span>
+          </button>
+          <div class="dropdown-menu" id="notif-dropdown">
+            <div class="dropdown-header">
+              <h4>Activity Notifications</h4>
+              <span class="badge badge-available">Live Stream</span>
+            </div>
+            <div class="dropdown-list" id="notif-list"></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN PAGE CONTENT -->
+    <main class="main-content">
+
+      <!-- FILTERS & SEARCH TOOLBAR -->
+      <div class="filters-bar">
+        <div class="search-box">
+          <i data-lucide="search"></i>
+          <input type="text" id="patient-search-input" class="form-control" placeholder="Search by name, ID, condition, or bed number...">
+        </div>
+
+        <div class="filter-controls">
+          <select id="filter-department" class="filter-select">
+            <option value="All">All Departments</option>
+            <option value="General Ward">General Ward</option>
+            <option value="ICU">ICU</option>
+            <option value="Emergency">Emergency</option>
+            <option value="Private Ward">Private Ward</option>
+            <option value="Pediatric Ward">Pediatric Ward</option>
+          </select>
+
+          <select id="filter-status" class="filter-select">
+            <option value="All">All Statuses</option>
+            <option value="Waiting">Waiting (Triage)</option>
+            <option value="Admitted">Admitted</option>
+            <option value="Under Treatment">Under Treatment</option>
+            <option value="Ready for Discharge">Ready for Discharge</option>
+            <option value="Discharged">Discharged</option>
+          </select>
+
+          <select id="filter-priority" class="filter-select">
+            <option value="All">All Priorities</option>
+            <option value="Emergency">Emergency (Highest)</option>
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+          </select>
+
+          <button class="btn btn-outline btn-sm" id="btn-reset-filters" title="Reset Filters">
+            <i data-lucide="rotate-ccw"></i>
+            <span>Reset</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- PATIENTS DATA TABLE -->
+      <div class="card">
+        <div class="card-header">
+          <h3>
+            <i data-lucide="users"></i>
+            <span>Patients Directory</span>
+          </h3>
+          <span class="badge badge-waiting" id="patients-count-badge">Loading...</span>
+        </div>
+        <div class="card-body" style="padding: 0;">
+          <div class="table-responsive">
+            <table class="data-table" id="patients-table">
+              <thead>
+                <tr>
+                  <th>Patient ID</th>
+                  <th>Patient Name</th>
+                  <th>Age</th>
+                  <th>Gender</th>
+                  <th>Contact</th>
+                  <th>Department</th>
+                  <th>Admission Date</th>
+                  <th>Priority</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="patients-table-body">
+                <tr>
+                  <td colspan="10" style="text-align: center; padding: 40px; color: #64748B;">
+                    Loading patient records...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- MODAL 1: ADD NEW PATIENT -->
+  <div class="modal-overlay" id="modal-add-patient">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <h3><i data-lucide="user-plus"></i> Add New Inpatient Registration</h3>
+        <button class="modal-close-btn" data-close="modal-add-patient">&times;</button>
+      </div>
+      <form id="form-add-patient">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Patient ID</label>
+              <input type="text" class="form-control" value="Auto-generated (e.g. PAT-1194)" disabled style="background:#F1F5F9; color:#64748B;">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label required">Full Name</label>
+              <input type="text" id="add-name" class="form-control" required placeholder="e.g. Sarah Connor">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label required">Age</label>
+              <input type="number" id="add-age" class="form-control" required min="0" max="130" placeholder="e.g. 42">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label required">Gender</label>
+              <select id="add-gender" class="form-control" required>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label required">Phone Number</label>
+              <input type="tel" id="add-phone" class="form-control" required placeholder="+1 (555) 000-0000">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label required">Department</label>
+              <select id="add-dept" class="form-control" required>
+                <option value="General Ward">General Ward</option>
+                <option value="ICU">ICU</option>
+                <option value="Emergency">Emergency</option>
+                <option value="Private Ward">Private Ward</option>
+                <option value="Pediatric Ward">Pediatric Ward</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label required">Priority Level</label>
+              <select id="add-priority" class="form-control" required>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+                <option value="High">High</option>
+                <option value="Emergency">Emergency (Immediate Bed)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label required">Admission Date</label>
+              <input type="date" id="add-admission-date" class="form-control" required>
+            </div>
+
+            <div class="form-group col-span-2">
+              <label class="form-label required">Medical Condition / Primary Diagnosis</label>
+              <input type="text" id="add-condition" class="form-control" required placeholder="e.g. Acute Appendicitis / High Fever">
+            </div>
+
+            <div class="form-group col-span-2">
+              <label class="form-label">Residential Address</label>
+              <input type="text" id="add-address" class="form-control" placeholder="123 Hospital Way, Springfield">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline btn-sm" data-close="modal-add-patient">Cancel</button>
+          <button type="submit" class="btn btn-accent btn-sm">
+            <i data-lucide="check"></i>
+            <span>Register Patient</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: EDIT PATIENT -->
+  <div class="modal-overlay" id="modal-edit-patient">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <h3><i data-lucide="edit"></i> Edit Patient Details</h3>
+        <button class="modal-close-btn" data-close="modal-edit-patient">&times;</button>
+      </div>
+      <form id="form-edit-patient">
+        <input type="hidden" id="edit-id">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Patient ID</label>
+              <input type="text" id="edit-id-display" class="form-control" disabled style="background:#F1F5F9;">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label required">Full Name</label>
+              <input type="text" id="edit-name" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label required">Age</label>
+              <input type="number" id="edit-age" class="form-control" required min="0" max="130">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label required">Gender</label>
+              <select id="edit-gender" class="form-control" required>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label required">Phone Number</label>
+              <input type="tel" id="edit-phone" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label required">Department</label>
+              <select id="edit-dept" class="form-control" required>
+                <option value="General Ward">General Ward</option>
+                <option value="ICU">ICU</option>
+                <option value="Emergency">Emergency</option>
+                <option value="Private Ward">Private Ward</option>
+                <option value="Pediatric Ward">Pediatric Ward</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label required">Priority Level</label>
+              <select id="edit-priority" class="form-control" required>
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+                <option value="Emergency">Emergency</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label required">Status</label>
+              <select id="edit-status" class="form-control" required>
+                <option value="Waiting">Waiting</option>
+                <option value="Admitted">Admitted</option>
+                <option value="Under Treatment">Under Treatment</option>
+                <option value="Ready for Discharge">Ready for Discharge</option>
+                <option value="Discharged">Discharged</option>
+              </select>
+            </div>
+
+            <div class="form-group col-span-2">
+              <label class="form-label required">Medical Condition</label>
+              <input type="text" id="edit-condition" class="form-control" required>
+            </div>
+
+            <div class="form-group col-span-2">
+              <label class="form-label">Address</label>
+              <input type="text" id="edit-address" class="form-control">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline btn-sm" data-close="modal-edit-patient">Cancel</button>
+          <button type="submit" class="btn btn-accent btn-sm">
+            <i data-lucide="save"></i>
+            <span>Save Changes</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 3: VIEW PATIENT DETAILS -->
+  <div class="modal-overlay" id="modal-view-patient">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3><i data-lucide="file-text"></i> Patient Medical File</h3>
+        <button class="modal-close-btn" data-close="modal-view-patient">&times;</button>
+      </div>
+      <div class="modal-body" id="view-patient-body">
+        <!-- Rendered dynamically -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline btn-sm" data-close="modal-view-patient">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/app.js"></script>
+  <script src="js/patients.js"></script>
+</body>
+</html>

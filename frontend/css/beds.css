@@ -1,0 +1,265 @@
+/* Bed Management Specific Styles */
+
+.bed-controls-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: var(--bg-card);
+  padding: 16px 20px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 24px;
+}
+
+.bed-tabs-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.bed-tab-btn {
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-color);
+  background: #FFFFFF;
+  color: var(--text-muted);
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.bed-tab-btn:hover {
+  border-color: var(--accent-teal);
+  color: var(--primary-navy);
+}
+
+.bed-tab-btn.active {
+  background: var(--primary-navy);
+  color: #FFFFFF;
+  border-color: var(--primary-navy);
+  box-shadow: 0 2px 6px rgba(22, 58, 95, 0.25);
+}
+
+.bed-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Department Section & Bed Grid */
+.dept-section {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 28px;
+  overflow: hidden;
+}
+
+.dept-header {
+  padding: 16px 22px;
+  background: #F8FAFC;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.dept-title-group h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--primary-navy);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dept-stats-pills {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+.dept-beds-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 16px;
+  padding: 22px;
+}
+
+/* Individual Bed Card */
+.bed-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+.bed-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Status Indicator Accents */
+.bed-card.status-available {
+  border-top: 4px solid var(--status-available);
+  background: linear-gradient(180deg, rgba(16, 185, 129, 0.04) 0%, #FFFFFF 30%);
+}
+
+.bed-card.status-occupied {
+  border-top: 4px solid var(--status-occupied);
+  background: linear-gradient(180deg, rgba(239, 68, 68, 0.04) 0%, #FFFFFF 30%);
+}
+
+.bed-card.status-maintenance {
+  border-top: 4px solid var(--status-maintenance);
+  background: linear-gradient(180deg, rgba(245, 158, 11, 0.04) 0%, #FFFFFF 30%);
+}
+
+.bed-card.status-reserved {
+  border-top: 4px solid var(--status-reserved);
+  background: linear-gradient(180deg, rgba(59, 130, 246, 0.04) 0%, #FFFFFF 30%);
+}
+
+.bed-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.bed-number {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--primary-navy);
+  letter-spacing: -0.01em;
+}
+
+.bed-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.bed-patient-info {
+  margin-top: 4px;
+}
+
+.bed-patient-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--primary-navy);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bed-patient-id {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.bed-meta-text {
+  font-size: 0.72rem;
+  color: var(--text-light);
+  margin-top: 2px;
+}
+
+.bed-card-footer {
+  border-top: 1px dashed var(--border-color);
+  padding-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.bed-action-btn {
+  padding: 4px 8px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background: #FFFFFF;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.bed-action-btn:hover {
+  background: #F1F5F9;
+  color: var(--primary-navy);
+  border-color: #CBD5E1;
+}
+
+.bed-action-btn.primary {
+  background: var(--accent-teal);
+  color: #FFFFFF;
+  border-color: var(--accent-teal);
+}
+
+.bed-action-btn.primary:hover {
+  background: var(--accent-teal-dark);
+}
+
+.bed-action-btn.danger:hover {
+  background: var(--status-occupied-bg);
+  color: var(--status-occupied);
+  border-color: var(--status-occupied-border);
+}
+
+.bed-action-btn.warning:hover {
+  background: var(--status-maintenance-bg);
+  color: var(--status-maintenance);
+  border-color: var(--status-maintenance-border);
+}
+
+/* Legend Box */
+.bed-legend-box {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+  padding: 8px 16px;
+  background: #F8FAFC;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-color);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.legend-dot.green { background-color: var(--status-available); }
+.legend-dot.red { background-color: var(--status-occupied); }
+.legend-dot.yellow { background-color: var(--status-maintenance); }
+.legend-dot.blue { background-color: var(--status-reserved); }
